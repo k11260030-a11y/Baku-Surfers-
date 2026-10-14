@@ -1,0 +1,1681 @@
+<title>Baku Surfers</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Konsep: malam di jalan kota, lorong kata menyala. Satu tampilan gelap, aksen kuning koin. */
+  --bg:#0d1131; --panel:#161c47; --panel2:#1f2759; --line:#323d7a;
+  --fg:#eef0ff; --muted:#a3abdc;
+  --accent:#ffcf3f; --accent-ink:#1c1740;
+  --good:#3fe0a0; --bad:#ff6074; --info:#79b4ff;
+  --f-display:'Bricolage Grotesque','Trebuchet MS',sans-serif;
+  --f-body:'Nunito Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{
+  font-family:var(--f-body); font-size:15px; line-height:1.5; color:var(--fg); background:var(--bg);
+  padding-block:20px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.app{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+section{display:flex;flex-direction:column;gap:16px;min-width:0}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;line-height:1.1}
+h1{font-size:46px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:21px;font-weight:800}
+h3{font-size:16px;font-weight:800}
+p{margin:0}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.lead{color:var(--muted);font-size:16px;max-width:34ch}
+.ic{width:18px;height:18px;flex:none;display:inline-block;vertical-align:-3px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);font-weight:800;font-variant-numeric:tabular-nums}
+.chip small{font-weight:600;color:var(--muted);font-size:12px}
+.btn{
+  font-family:var(--f-display);font-weight:800;font-size:16px;color:var(--fg);
+  background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:13px 16px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center;min-height:48px;
+}
+.btn:hover{border-color:var(--info)}
+.btn:focus-visible,.opt:focus-visible,.pad:focus-visible{outline:3px solid var(--info);outline-offset:2px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent}
+.btn.small{font-size:14px;padding:8px 12px;min-height:38px;border-radius:11px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.block{width:100%}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.hero{display:flex;flex-direction:column;gap:12px;padding-top:6px}
+.hero .word{display:flex;gap:8px;flex-wrap:wrap}
+.tag{display:inline-block;padding:5px 11px;border-radius:9px;font-weight:800;font-size:13px}
+.tag.ok{background:rgba(63,224,160,.16);color:var(--good)}
+.tag.no{background:rgba(255,96,116,.16);color:var(--bad);text-decoration:line-through}
+
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.day{border-radius:11px;border:1px solid var(--line);background:var(--panel2);padding:7px 2px;text-align:center;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.day b{display:block;font-size:14px;color:var(--fg)}
+.day.done{background:rgba(63,224,160,.14);border-color:rgba(63,224,160,.5)}
+.day.now{border-color:var(--accent);background:rgba(255,207,63,.14)}
+.day.now b{color:var(--accent)}
+
+.item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;background:var(--panel2);border:1px solid var(--line)}
+.item .meta{flex:1;min-width:0}
+.item .meta b{display:block;font-family:var(--f-display)}
+.item .meta span{display:block;font-size:13px;color:var(--muted)}
+.item .meta .asal{color:var(--text);opacity:.85;margin-top:1px}
+.item .meta .dsk{font-size:12px;margin-top:2px;line-height:1.35}
+.item canvas{flex:none;width:44px;height:54px;background:#0f1438;border-radius:10px}
+ul.how{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;color:var(--muted)}
+ul.how b{color:var(--fg)}
+.note{font-size:13px;color:var(--muted);border-left:3px solid var(--info);padding-left:12px}
+
+.hud{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hud .chip{padding:6px 10px;font-size:14px}
+.pips{display:inline-flex;gap:4px;align-items:center;margin-left:auto}
+.pips i{width:12px;height:12px;border-radius:50%;background:var(--panel2);border:2px solid var(--line)}
+.pips i.on{background:var(--bad);border-color:var(--bad);box-shadow:0 0 8px var(--bad)}
+.race{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.runner{display:flex;align-items:center;gap:7px;padding:4px 8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:13px;min-width:0}
+.runner.me{border-color:var(--accent)}
+.runner canvas{width:26px;height:32px;flex:none}
+.runner .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}
+.runner .sc{font-variant-numeric:tabular-nums;color:var(--muted)}
+.runner .rk{font-family:var(--f-display);font-weight:800;color:var(--accent);width:14px;text-align:center}
+.stage{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0a0d27;touch-action:none}
+.stage canvas{display:block;width:100%;height:auto;aspect-ratio:360/560}
+.toast{position:absolute;left:10px;right:10px;top:10px;padding:9px 12px;border-radius:12px;font-weight:800;font-size:14px;background:rgba(13,17,49,.92);border:1px solid var(--line);pointer-events:none;opacity:0;transform:translateY(-6px);transition:opacity .15s,transform .15s}
+.toast.show{opacity:1;transform:none}
+.toast.good{border-color:var(--good);color:var(--good)}
+.toast.bad{border-color:var(--bad);color:var(--bad)}
+.controls{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:10px}
+.pad{font-family:var(--f-display);font-weight:800;font-size:15px;min-height:56px;border-radius:16px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.pad:active{background:var(--line)}
+.pad.boost{background:rgba(255,207,63,.14);border-color:var(--accent);color:var(--accent)}
+
+[hidden]{display:none!important}
+.modal{position:fixed;inset:0;z-index:20;background:rgba(5,7,25,.76);display:flex;align-items:flex-end;justify-content:center}
+.sheet{
+  width:100%;max-width:460px;max-height:92dvh;overflow:auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:22px 22px 0 0;display:flex;flex-direction:column;gap:14px;
+  padding:20px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+}
+.sheet .q{font-family:var(--f-display);font-size:22px;font-weight:800;line-height:1.2}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font-family:var(--f-body);font-weight:800;font-size:16px;text-align:left;color:var(--fg);background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:13px 14px;cursor:pointer;min-height:50px}
+.opt.right{border-color:var(--good);background:rgba(63,224,160,.14)}
+.opt.wrong{border-color:var(--bad);background:rgba(255,96,116,.14)}
+.timer{height:6px;border-radius:99px;background:var(--panel2);overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--accent)}
+.why{padding:11px 13px;border-radius:12px;background:var(--panel2);font-size:14px}
+.why.good{border-left:4px solid var(--good)}
+.why.bad{border-left:4px solid var(--bad)}
+.ranklist{display:flex;flex-direction:column;gap:6px}
+.ranklist .r{display:flex;gap:10px;align-items:center;padding:8px 12px;border-radius:12px;background:var(--panel2);font-variant-numeric:tabular-nums}
+.ranklist .r.me{outline:2px solid var(--accent)}
+.ranklist .r b:first-child{width:18px;color:var(--accent);font-family:var(--f-display)}
+.ranklist .r span{margin-left:auto;color:var(--muted)}
+.slots{min-height:60px;border:2px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pool{display:flex;flex-wrap:wrap;gap:6px}
+.chipw{font-family:var(--f-body);font-weight:800;font-size:16px;color:var(--fg);background:var(--panel2);border:2px solid var(--line);border-radius:11px;padding:9px 12px;cursor:pointer;min-height:42px}
+.chipw.on{border-color:var(--accent);background:rgba(255,207,63,.12)}
+.hintw{color:var(--muted);font-size:14px}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.segb{font-family:var(--f-display);font-weight:800;font-size:20px;min-height:52px;border-radius:14px;border:2px solid var(--line);background:var(--panel2);color:var(--fg);cursor:pointer}
+.segb.on{border-color:var(--accent);background:rgba(255,207,63,.14);color:var(--accent)}
+.segb:focus-visible,.chipw:focus-visible{outline:3px solid var(--info);outline-offset:2px}
+.lvls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lv{display:flex;flex-direction:column;gap:2px;padding:10px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--a);min-width:0}
+.lv i{display:block;height:26px;border-radius:8px;margin-bottom:6px}
+.lv b{font-family:var(--f-display);font-size:15px}
+.lv span{font-size:12px;color:var(--muted)}
+.inp{font-family:var(--f-body);font-weight:800;font-size:17px;color:var(--fg);background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:12px 14px;min-height:50px;width:100%;min-width:0}
+.inp:focus-visible{outline:3px solid var(--info);outline-offset:2px}
+.inp.codein{text-transform:uppercase;letter-spacing:.3em;text-align:center;font-family:var(--f-display);font-size:22px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:800;color:var(--muted)}
+.joinrow{display:flex;gap:8px}
+.joinrow .inp{flex:1}
+.code{font-family:var(--f-display);font-size:48px;font-weight:800;letter-spacing:.16em;color:var(--accent);-webkit-user-select:all;user-select:all;line-height:1}
+.slots4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slotp{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);min-width:0}
+.slotp.me{border-color:var(--accent)}
+.slotp.empty{opacity:.6;border-style:dashed}
+.slotp canvas{width:48px;height:60px;flex:none}
+.slotp div{display:flex;flex-direction:column;min-width:0}
+.slotp b{font-family:var(--f-display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slotp span{font-size:12px;color:var(--muted)}
+.msg{font-size:14px;color:var(--info)}
+.durs{display:flex;flex-wrap:wrap;gap:8px}
+.segb.dur{font-size:15px;min-height:44px;padding:0 14px}
+.segb:disabled{cursor:default;opacity:.65}
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;padding-top:6px}
+.pcol{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;text-align:center}
+.pcol canvas{width:64px;height:80px}
+.pcol b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--f-display);font-size:14px}
+.pcol span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pblock{width:100%;border-radius:12px 12px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:8px;transform-origin:bottom;animation:rise .8s ease-out both}
+.pblock i{font-style:normal;font-family:var(--f-display);font-weight:800;font-size:28px;color:#1c1740}
+.p1 .pblock{height:104px;background:#ffcf3f}
+.p2 .pblock{height:76px;background:#cfd6f5;animation-delay:.15s}
+.p3 .pblock{height:56px;background:#e8a063;animation-delay:.3s}
+@keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}.pblock{animation:none}}
+</style>
+
+<main class="app">
+  <section id="home">
+    <div class="hero">
+      <span class="eyebrow">Game belajar Bahasa Indonesia</span>
+      <h1>Baku Surfers</h1>
+      <p class="lead">Surf di jalanan kota-kota Indonesia, sikat kata yang baku, dan jangan sampai ditilang polisi.</p>
+      <div class="word"><span class="tag ok">apotek</span><span class="tag no">apotik</span><span class="tag ok">risiko</span><span class="tag no">resiko</span></div>
+    </div>
+    <div class="row" id="stats"></div>
+    <button class="btn primary block" id="btnPlay" style="font-size:19px;min-height:58px">Main solo</button>
+    <div class="card" id="together"></div>
+
+    <div class="card" id="setup"></div>
+    <div class="card" id="daily"></div>
+    <div class="card" id="shop"></div>
+
+    <div class="card">
+      <h2>Cara main</h2>
+      <ul class="how">
+        <li><b>Pindah jalur</b> dengan geser layar, tombol kiri dan kanan, atau panah keyboard.</li>
+        <li><b>Ambil kata baku.</b> Kata tidak baku membuat kamu melambat dan polisi mulai mengejar. Tiga kesalahan berturut-turut, kamu ditangkap. Satu jawaban benar membuat polisi mundur.</li>
+        <li><b>Lorong kata:</b> pilih lajur BAKU atau TIDAK BAKU sesuai kata di papan. Salah pilih, polisi mengejarmu.</li>
+        <li><b>Kotak ?</b> memberi soal. Jawaban benar memberi kunci. <b>Roket</b> juga memberi soal, benar berarti lari 2x lebih cepat. Jawaban salah juga membuat polisi mengejar.</li>
+        <li><b>Level kota:</b> tiap level punya latar kota Indonesia. Di ujung level ada <b>Lorong Soal</b> berisi soal yang lebih sulit, misalnya menyusun kalimat. Jawab benar, lanjut dengan aman. Jawab salah, polisi mengejarmu sepanjang peta berikutnya.</li>
+        <li><b>Tempo:</b> makin lama kamu berlari, makin cepat tempo larinya. Rintangan juga makin renggang di level yang lebih tinggi.</li>
+        <li><b>Kalah?</b> Lanjut dengan kunci: kalah ke-1 butuh 1 kunci, kalah ke-2 butuh 2 kunci, dan seterusnya. Atau hidup lagi dengan menjawab satu soal.</li>
+      </ul>
+      <p class="note">Main bersama lewat room: satu orang membuat room dan membagikan kode 5 karakter, temannya memasukkan kode itu di menu awal. Maksimal 4 orang per room. Semua pemain mendapat rintangan yang sama.</p>
+    </div>
+  </section>
+
+  <section id="room" hidden>
+    <div class="row" style="justify-content:space-between">
+      <button class="btn small ghost" id="roomLeave">Keluar room</button>
+      <span class="chip" id="roomCount">1/4 pemain</span>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Kode room</span>
+      <div class="code" id="roomCode">-----</div>
+      <div class="row"><button class="btn small" id="roomCopy">Salin kode</button></div>
+      <p class="note">Bagikan kode ini ke temanmu. Mereka memasukkannya di menu awal, bagian Main bersama. Maksimal 4 pemain.</p>
+    </div>
+    <div class="card" id="roomPlayers"></div>
+    <div id="roomAction" style="display:flex;flex-direction:column;gap:10px"></div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="row" style="justify-content:space-between">
+      <div class="row" style="gap:8px;flex-wrap:nowrap"><button class="btn small ghost" id="btnMenu">Menu</button><button class="btn small" id="btnEnd" hidden>Selesai</button></div>
+      <span class="chip" id="rankChip">Peringkat 1/4</span>
+    </div>
+    <div class="hud">
+      <span class="chip" id="hLevel"></span><span class="chip" id="hScore">0</span><span class="chip" id="hTempo"></span>
+      <span class="chip" id="hCoins"></span>
+      <span class="chip" id="hKeys"></span>
+      <span class="pips" id="pips" title="Tilang"><i></i><i></i><i></i></span>
+    </div>
+    <div class="race" id="race"></div>
+    <div class="stage" id="stage">
+      <canvas id="cv" width="360" height="560"></canvas>
+      <div class="toast" id="toast"></div>
+    </div>
+    <div class="controls">
+      <button class="pad" id="padL" aria-label="Pindah ke kiri"><svg class="ic" viewBox="0 0 20 20"><path d="M12.5 4 6 10l6.5 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Kiri</button>
+      <button class="pad boost" id="padB">Boost 2x</button>
+      <button class="pad" id="padR" aria-label="Pindah ke kanan">Kanan<svg class="ic" viewBox="0 0 20 20"><path d="M7.5 4 14 10l-6.5 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var W=360,H=560,CX=180,HZ=128,PY=468,LW=98;
+
+/* ---------- ikon ---------- */
+var COIN='<svg class="ic" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="#ffcf3f" stroke="#c98f00" stroke-width="2"/><path d="M7 10h6" stroke="#c98f00" stroke-width="2" stroke-linecap="round"/></svg>';
+var KEY='<svg class="ic" viewBox="0 0 20 20"><circle cx="6.5" cy="10" r="3.5" fill="none" stroke="#7fd3ff" stroke-width="2"/><path d="M10 10h8M15 10v3M18 10v2.5" stroke="#7fd3ff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>';
+
+/* ---------- data ---------- */
+var SKINS=[
+  {id:'betawi',name:'Baju Sadariah',daerah:'Betawi, DKI Jakarta',desc:'Kemeja putih, sarung kotak, dan peci hitam untuk sehari-hari.',price:0,shirt:'#ffffff',shirt2:'#d9d9ef',motif:'plain',lower:'kain',kain:'#c0392b',kain2:'#1f3a6e',kainPat:'plaid',sash:'',shoe:'#6b4a2f',hair:'#1a1226',hat:'peci',hatCol:'#1a1a1a',hat2:'#ffd23f'},
+  {id:'jawa',name:'Surjan',daerah:'Yogyakarta, Jawa',desc:'Baju bergaris dengan kain batik dan blangkon.',price:100,shirt:'#2d3e8c',shirt2:'#8fa2ff',motif:'stripe',lower:'kain',kain:'#8b5a2b',kain2:'#f1d9a0',kainPat:'batik',sash:'#f1d9a0',shoe:'#3b2a1a',hair:'#1a1226',hat:'blangkon',hatCol:'#7a4a1e',hat2:'#f1d9a0'},
+  {id:'bali',name:'Payas Madya',daerah:'Bali',desc:'Busana adat Bali dengan udeng, selendang emas, dan kain poleng.',price:150,shirt:'#ffffff',shirt2:'#ffd23f',motif:'gold',lower:'kain',kain:'#ffffff',kain2:'#1d1d1d',kainPat:'poleng',sash:'#ffd23f',shoe:'#e8b787',hair:'#1a1226',hat:'udeng',hatCol:'#ffffff',hat2:'#ffd23f'},
+  {id:'minang',name:'Pakaian Penghulu',daerah:'Minangkabau, Sumatera Barat',desc:'Busana pemuka adat Minang dengan tanjak dan kain songket.',price:200,shirt:'#1b1b1b',shirt2:'#ffc93c',motif:'gold',lower:'kain',kain:'#b3122a',kain2:'#ffc93c',kainPat:'songket',sash:'#ffc93c',shoe:'#1b1b1b',hair:'#1a1226',hat:'tanjak',hatCol:'#b3122a',hat2:'#ffc93c'},
+  {id:'batak',name:'Ulos',daerah:'Batak, Sumatera Utara',desc:'Kain tenun ulos merah-hitam, lambang kehangatan dan kasih sayang.',price:250,shirt:'#1b1b1b',shirt2:'#c1272d',shirt3:'#ffffff',motif:'ulos',lower:'kain',kain:'#c1272d',kain2:'#1b1b1b',kainPat:'stripes',sash:'',shoe:'#3b2a1a',hair:'#1a1226',hat:'tali',hatCol:'#c1272d',hat2:'#1b1b1b'},
+  {id:'madura',name:"Pesa'an",daerah:'Madura, Jawa Timur',desc:'Kaus belang merah-putih, celana longgar hitam, dan odheng.',price:300,shirt:'#ffffff',shirt2:'#d62828',motif:'hstripe',lower:'pants',pants:'#1a1a1a',sash:'#d62828',shoe:'#1a1a1a',hair:'#1a1226',hat:'odheng',hatCol:'#1a1a1a',hat2:'#d62828'},
+  {id:'riau',name:'Teluk Belanga',daerah:'Melayu, Riau',desc:'Baju kurung Melayu dengan kain songket dan tengkolok.',price:350,shirt:'#1f9d63',shirt2:'#ffd23f',motif:'gold',lower:'kain',kain:'#f2b705',kain2:'#b3122a',kainPat:'songket',sash:'#b3122a',shoe:'#3b2a1a',hair:'#1a1226',hat:'tengkolok',hatCol:'#b3122a',hat2:'#ffd23f'},
+  {id:'dayak',name:'King Baba',daerah:'Dayak, Kalimantan Barat',desc:'Rompi manik-manik dengan mahkota bulu enggang.',price:400,shirt:'#7a1f12',shirt2:'#ffd23f',motif:'beads',lower:'kain',kain:'#1b1b1b',kain2:'#e63946',kainPat:'batik',sash:'#ffd23f',shoe:'#e8b787',hair:'#1a1226',hat:'enggang',hatCol:'#6b3a1a',hat2:'#ffd23f'},
+  {id:'makassar',name:'Baju Bodo',daerah:'Bugis-Makassar, Sulawesi Selatan',desc:'Blus cerah berlengan pendek dengan sarung kotak dan hiasan bunga emas.',price:450,shirt:'#ff5d8f',shirt2:'#ffe0ec',motif:'dots',lower:'kain',kain:'#2a9d8f',kain2:'#ffd23f',kainPat:'plaid',sash:'#ffd23f',shoe:'#3b2a1a',hair:'#1a1226',hat:'bando',hatCol:'#ffd23f',hat2:'#ff5d8f'},
+  {id:'toraja',name:'Seppa Tallu Buku',daerah:'Toraja, Sulawesi Selatan',desc:'Busana adat Toraja dengan hiasan manik kandaure dan warna emas.',price:500,shirt:'#111111',shirt2:'#ffd23f',motif:'beads',lower:'kain',kain:'#b81d24',kain2:'#ffd23f',kainPat:'stripes',sash:'#ffd23f',shoe:'#111111',hair:'#1a1226',hat:'kandaure',hatCol:'#ffd23f',hat2:'#e63946'},
+  {id:'sumba',name:'Hinggi',daerah:'Sumba, Nusa Tenggara Timur',desc:'Kain tenun ikat Sumba dengan ikat kepala khas.',price:550,tone:'#c98f5e',shirt:'#c98f5e',shirt2:'#ffffff',motif:'beads',lower:'kain',kain:'#1d3b6e',kain2:'#d8a05a',kainPat:'songket',sash:'#d8a05a',shoe:'#c98f5e',hair:'#1a1226',hat:'patang',hatCol:'#1d3b6e',hat2:'#d8a05a'},
+  {id:'papua',name:'Rok Rumbai',daerah:'Papua',desc:'Rok rumbai dari serat daun dan mahkota bulu cenderawasih.',price:600,tone:'#8d5a3b',shirt:'#8d5a3b',shirt2:'#ffffff',motif:'beads',lower:'kain',kain:'#c98a2b',kain2:'#6b3f12',kainPat:'rumbai',sash:'#2f8f4e',shoe:'#8d5a3b',hair:'#241610',hat:'cenderawasih',hatCol:'#ff7a1a',hat2:'#ffd23f'},
+  {id:'kalimantan',name:'Sangkarut',daerah:'Dayak Ngaju, Kalimantan Tengah',desc:'Rompi hias manik dan bulu, pakaian adat Dayak Ngaju.',price:650,shirt:'#c1272d',shirt2:'#ffd23f',motif:'beads',lower:'kain',kain:'#1b1b1b',kain2:'#ffd23f',kainPat:'beads',sash:'#ffd23f',shoe:'#e8b787',hair:'#1a1226',hat:'bulu',hatCol:'#1b1b1b',hat2:'#ffffff'}
+];
+var POLISI={id:'polisi',name:'Polisi',daerah:'',price:0,shirt:'#3b6cff',shirt2:'#ffffff',motif:'plain',lower:'pants',pants:'#1c2a6b',sash:'#111111',shoe:'#111111',hair:'#2a1a12',hat:'polisi',hatCol:'#1c2a6b',hat2:'#ffd23f'};
+function skinOf(id){if(id==='polisi')return POLISI;for(var i=0;i<SKINS.length;i++)if(SKINS[i].id===id)return SKINS[i];return SKINS[0]}
+var BOOST_PRICE=60;
+
+var PAIRS=[
+ ['apotek','apotik'],['analisis','analisa'],['risiko','resiko'],['kualitas','kwalitas'],['nasihat','nasehat'],
+ ['praktik','praktek'],['izin','ijin'],['kuitansi','kwitansi'],['sistem','sistim'],['objek','obyek'],
+ ['hakikat','hakekat'],['silakan','silahkan'],['teknik','tehnik'],['standar','standard'],['manajemen','managemen'],
+ ['frekuensi','frekwensi'],['atlet','atlit'],['antre','antri'],['karier','karir'],['hipotesis','hipotesa'],
+ ['jenazah','jenasah'],['kaidah','kaedah'],['ambulans','ambulance'],['aktivitas','aktifitas'],['sekadar','sekedar'],
+ ['telepon','telpon'],['napas','nafas'],['foto','photo'],['konkret','kongkrit'],['hierarki','hirarki'],
+ ['Jumat',"Jum'at"],['azan','adzan'],['khawatir','kuatir'],['lembap','lembab'],['hobi','hobby'],
+ ['kreatif','kreatip'],['aktif','aktip'],['teknologi','tekhnologi'],
+ ['subjek','subyek'],['proyek','projek'],['objektif','obyektif'],['andal','handal'],['imbau','himbau'],
+ ['mengubah','merubah'],['memengaruhi','mempengaruhi'],['menyukseskan','mensukseskan'],['ekstrem','ekstrim'],['Februari','Pebruari'],
+ ['November','Nopember'],['sertifikat','sertipikat'],['varietas','varitas'],['Rabu','Rebo'],['Kamis','Kemis'],
+ ['mazhab','mahzab'],['asas','azas'],['sakelar','saklar'],['kuantitas','kwantitas'],['kuis','kwis'],
+ ['kuota','kwota'],['bus','bis'],['cokelat','coklat'],['detail','detil'],['definisi','difinisi'],
+ ['diagnosis','diagnosa'],['ekspor','eksport'],['impor','import'],['ekstra','extra'],['esai','essay'],
+ ['gizi','gisi'],['haji','hajji'],['ikhlas','ihlas'],['kompleks','komplek'],['konsekuen','konsekwen'],
+ ['koordinasi','kordinasi'],['kosakata','kosa kata'],['merek','merk'],['metode','metoda'],['mi','mie'],
+ ['olahraga','olah raga'],['paham','faham'],['pikir','fikir'],['pasif','pasip'],['persen','prosen'],
+ ['provinsi','propinsi'],['rasional','rasionil'],['rezeki','rejeki'],['ritme','ritem'],['saksama','seksama'],
+ ['sinkron','singkron'],['tenteram','tentram'],['terampil','trampil'],['trotoar','trotoir'],['zaman','jaman'],
+ ['zakat','jakat'],['ziarah','jiarah'],['survei','survey'],['tradisional','tradisionil'],['gubuk','gubug'],
+ ['obsesi','opsesi'],['orisinal','orisinil'],['paspor','pasport'],['sampo','shampoo'],['sentimeter','centimeter'],
+ ['taksi','taxi'],['teknisi','tehnisi'],['tekstil','textil'],['ijazah','ijasah'],['istri','isteri'],
+ ['imajinasi','imaginasi'],['ideologi','idiologi'],['masyarakat','masarakat'],['mubazir','mubadzir'],['persentase','prosentase'],
+ ['tarif','tarip'],['yakin','yaqin'],['jadwal','jadual'],['sabun','sabon'],['kudus','kuddus'],
+ ['sukses','suksess'],['ekspresi','exspresi'],['efisien','effisien'],['edukasi','edukasi']
+];
+/* buang pasangan yang meragukan */
+PAIRS=PAIRS.filter(function(p){return p[0]!==p[1]&&['jadwal','sabun','kudus','edukasi','sukses','Rabu'].indexOf(p[0])<0});
+var QS=[
+ {q:'Kalimat mana yang memakai kata baku?',c:'Dia mengubah jadwal rapat.',w:['Dia merubah jadwal rapat.','Dia ngubah jadwal rapat.'],why:'Kata dasarnya "ubah", jadi bentuk bakunya "mengubah", bukan "merubah".'},
+ {q:'Penulisan mana yang benar?',c:'Buku itu ada di atas meja.',w:['Buku itu ada diatas meja.','Buku itu ada di-atas meja.'],why:'Kata depan "di" ditulis terpisah dari kata yang mengikutinya.'},
+ {q:'Penulisan mana yang benar?',c:'Tugas itu dikerjakan semalam.',w:['Tugas itu di kerjakan semalam.'],why:'"di-" sebagai awalan ditulis serangkai dengan kata kerja.'},
+ {q:'Penulisan mana yang benar?',c:'Di mana kamu tinggal?',w:['Dimana kamu tinggal?'],why:'Pada kalimat tanya, "di mana" ditulis terpisah.'},
+ {q:'Penulisan mana yang benar?',c:'Ke mana kamu akan pergi?',w:['Kemana kamu akan pergi?'],why:'"Ke mana" pada kalimat tanya ditulis terpisah.'},
+ {q:'Penulisan mana yang benar?',c:'Dia pergi ke pasar.',w:['Dia pergi kepasar.'],why:'"ke" sebagai kata depan ditulis terpisah dari kata tempat.'},
+ {q:'Penulisan mana yang benar?',c:'Dia dipanggil oleh guru.',w:['Dia di panggil oleh guru.'],why:'"di-" pada kata kerja pasif ditulis serangkai.'},
+ {q:'Penulisan mana yang benar?',c:'Kunci itu terletak di dalam tas.',w:['Kunci itu terletak didalam tas.'],why:'Kata depan "di" ditulis terpisah dari "dalam".'},
+ {q:'Penulisan nama hari yang benar:',c:'Rapat diadakan hari Senin.',w:['Rapat diadakan hari senin.'],why:'Nama hari diawali huruf kapital.'},
+ {q:'Penulisan nama bulan yang benar:',c:'Ujian dimulai pada bulan Mei.',w:['Ujian dimulai pada bulan mei.'],why:'Nama bulan diawali huruf kapital.'},
+ {q:'Penulisan nama bahasa yang benar:',c:'Dia belajar bahasa Indonesia.',w:['Dia belajar Bahasa indonesia.','Dia belajar bahasa indonesia.'],why:'Nama bahasa diawali huruf kapital, sedangkan kata "bahasa" tidak kapital di tengah kalimat.'},
+ {q:'Penulisan nama lembaga yang benar:',c:'Dia lulus dari Universitas Indonesia.',w:['Dia lulus dari universitas indonesia.'],why:'Nama lembaga resmi ditulis dengan huruf kapital pada tiap unsurnya.'},
+ {q:'Kata dasar "sapu" diberi awalan me- menjadi...',c:'menyapu',w:['mensapu','mesapu'],why:'Huruf s di awal kata dasar luluh menjadi ny: me- + sapu = menyapu.'},
+ {q:'Bentuk kata ulang yang baku:',c:'anak-anak',w:['anak2','anak anak'],why:'Kata ulang ditulis lengkap dengan tanda hubung, bukan angka 2.'},
+ {q:'Arti kata "gigih" adalah...',c:'tekun dan tidak mudah menyerah',w:['suka marah','cepat bosan'],why:'"Gigih" berarti tekun, ulet, dan pantang menyerah.'},
+ {q:'Arti kata "lazim" adalah...',c:'umum; biasa',w:['jarang terjadi','sangat mahal'],why:'"Lazim" berarti umum atau biasa terjadi.'},
+ {q:'Serapan baku dari kata "effective":',c:'efektif',w:['efektip','effektif'],why:'Akhiran -ive menjadi -if, dan huruf f tidak digandakan.'},
+ {q:'Kalimat mana yang tepat dalam ragam baku?',c:'Silakan duduk di sini.',w:['Silahkan duduk disini.','Silahkan duduk di sini.'],why:'Bentuk baku "silakan", dan "di sini" ditulis terpisah.'},
+ {q:'Singkatan dari "dan lain-lain" yang benar:',c:'dll.',w:['dll','d.l.l.'],why:'Singkatan "dan lain-lain" ditulis "dll." dengan satu titik di akhir.'},
+ {q:'Singkatan dari "dan sebagainya" yang benar:',c:'dsb.',w:['dsb','d.s.b.'],why:'Singkatan "dan sebagainya" ditulis "dsb." dengan titik di akhir.'},
+ {q:'Singkatan dari "dan kawan-kawan" yang benar:',c:'dkk.',w:['dkk','d.k.k.'],why:'Singkatan "dan kawan-kawan" ditulis "dkk." dengan titik di akhir.'},
+ {q:'KBBI adalah singkatan dari...',c:'Kamus Besar Bahasa Indonesia',w:['Kamus Baku Bahasa Indonesia','Kitab Besar Bahasa Indonesia'],why:'KBBI adalah Kamus Besar Bahasa Indonesia, rujukan utama kata baku.'},
+ {q:'Tanda baca yang tepat untuk rincian:',c:'Ibu membeli apel, jeruk, dan anggur.',w:['Ibu membeli apel jeruk dan anggur.','Ibu membeli apel; jeruk; dan anggur.'],why:'Rincian dalam kalimat dipisahkan dengan koma, dan sebelum "dan" juga diberi koma.'},
+ {q:'Kalimat tanya diakhiri dengan...',c:'tanda tanya (?)',w:['tanda seru (!)','titik (.)'],why:'Kalimat tanya diakhiri tanda tanya.'},
+ {q:'Kalimat perintah yang tegas diakhiri dengan...',c:'tanda seru (!)',w:['koma (,)','tanda tanya (?)'],why:'Kalimat perintah atau seruan kuat diakhiri tanda seru.'},
+ {q:'Penulisan pukul yang benar:',c:'pukul 07.30',w:['pukul 07:30','pukul 7,30'],why:'Menurut ejaan, penunjuk waktu ditulis dengan titik: pukul 07.30.'},
+ {q:'Penulisan urutan yang benar:',c:'juara ke-2',w:['juara ke 2','juara ke2'],why:'Awalan ke- sebelum angka ditulis dengan tanda hubung.'},
+ {q:'Penulisan kata majemuk yang benar:',c:'rumah sakit',w:['rumahsakit','rumah-sakit'],why:'Kata majemuk umumnya ditulis terpisah, misalnya "rumah sakit".'},
+ {q:'Penulisan yang benar:',c:'matahari',w:['mata hari','mata-hari'],why:'"Matahari" sudah padu maknanya, jadi ditulis serangkai.'},
+ {q:'Penulisan yang benar:',c:'tanda tangan',w:['tandatangan','tanda-tangan'],why:'"Tanda tangan" ditulis terpisah.'},
+ {q:'Penulisan yang benar:',c:'antarkota',w:['antar kota','antar-kota'],why:'Awalan "antar-" ditulis serangkai dengan kata di belakangnya.'},
+ {q:'Penulisan yang benar:',c:'Siapa pun boleh ikut.',w:['Siapapun boleh ikut.'],why:'Partikel "pun" pada "siapa pun" ditulis terpisah.'},
+ {q:'Penulisan yang benar:',c:'Meskipun hujan, kami berangkat.',w:['Meski pun hujan, kami berangkat.'],why:'"Meskipun" adalah konjungsi yang ditulis serangkai.'},
+ {q:'Kata dasar "baca" diberi awalan pe- menjadi...',c:'pembaca',w:['pebaca','pengbaca'],why:'pe- + baca menjadi pembaca (bunyi m muncul sebelum b).'},
+ {q:'Kata dasar "tari" diberi awalan pe- menjadi...',c:'penari',w:['petari','pentari'],why:'pe- + tari menjadi penari.'},
+ {q:'Kata dasar "ajar" diberi awalan ber- menjadi...',c:'belajar',w:['berajar','bejar'],why:'ber- + ajar menjadi belajar (bentuk khusus).'},
+ {q:'Kata dasar "kerja" diberi awalan ber- menjadi...',c:'bekerja',w:['berkerja','bekerjah'],why:'Pada kata yang mengandung bunyi r di suku pertama, ber- menjadi be-: bekerja.'},
+ {q:'Kata dasar "renang" diberi awalan ber- menjadi...',c:'berenang',w:['berrenang','beerenang'],why:'Kata berawal r: ber- + renang menjadi berenang (r tidak digandakan).'},
+ {q:'Kata dasar "ternak" diberi awalan ber- menjadi...',c:'beternak',w:['berternak','beterak'],why:'Kata yang suku pertamanya berakhir -er, awalan ber- menjadi be-: beternak.'},
+ {q:'Kata dasar "ajar" diberi awalan pe- menjadi...',c:'pelajar',w:['peajar','pengajar'],why:'pe- + ajar menjadi pelajar (orang yang belajar). "Pengajar" artinya orang yang mengajar.'},
+ {q:'Arti kata "cermat" adalah...',c:'teliti',w:['ceroboh','terburu-buru'],why:'"Cermat" berarti teliti dan hati-hati.'},
+ {q:'Arti kata "arif" adalah...',c:'bijaksana',w:['pemarah','sombong'],why:'"Arif" berarti bijaksana.'},
+ {q:'Arti kata "lugas" adalah...',c:'langsung ke pokok tanpa bertele-tele',w:['sangat panjang','sulit dipahami'],why:'"Lugas" berarti apa adanya dan langsung ke pokok persoalan.'},
+ {q:'Arti kata "sporadis" adalah...',c:'terjadi sesekali dan tidak merata',w:['terjadi setiap hari','terjadi serentak'],why:'"Sporadis" berarti kadang-kadang dan tidak merata.'},
+ {q:'Arti kata "ambigu" adalah...',c:'bermakna ganda',w:['bermakna jelas','tidak bermakna'],why:'"Ambigu" berarti bermakna lebih dari satu sehingga membingungkan.'},
+ {q:'Arti kata "fatal" adalah...',c:'berakibat sangat buruk',w:['sangat lucu','sangat mudah'],why:'"Fatal" berarti mengakibatkan kematian atau akibat yang sangat buruk.'},
+ {q:'Arti kata "implementasi" adalah...',c:'pelaksanaan',w:['perencanaan','penolakan'],why:'"Implementasi" berarti pelaksanaan atau penerapan.'},
+ {q:'Arti kata "inovasi" adalah...',c:'pembaruan',w:['penyalinan','pengulangan'],why:'"Inovasi" berarti pembaruan atau penemuan baru.'},
+ {q:'Arti kata "kolaborasi" adalah...',c:'kerja sama',w:['persaingan','perpisahan'],why:'"Kolaborasi" berarti kerja sama.'},
+ {q:'Arti kata "komprehensif" adalah...',c:'mencakup secara luas dan lengkap',w:['singkat dan sempit','tidak berguna'],why:'"Komprehensif" berarti mencakup banyak hal secara luas dan lengkap.'},
+ {q:'Arti kata "esensial" adalah...',c:'sangat penting dan mendasar',w:['tidak penting','berlebihan'],why:'"Esensial" berarti hal pokok yang sangat penting.'},
+ {q:'Arti kata "hipotesis" adalah...',c:'dugaan sementara yang perlu dibuktikan',w:['kesimpulan akhir','daftar pustaka'],why:'Hipotesis adalah dugaan awal yang kebenarannya masih harus diuji.'},
+ {q:'Arti kata "konsisten" adalah...',c:'tetap dan tidak berubah-ubah',w:['mudah berubah','berlebihan'],why:'"Konsisten" berarti tetap pada pendirian atau aturan.'},
+ {q:'Arti kata "akurat" adalah...',c:'tepat dan teliti',w:['asal-asalan','terlambat'],why:'"Akurat" berarti tepat, benar, dan teliti.'},
+ {q:'Arti kata "prioritas" adalah...',c:'hal yang diutamakan',w:['hal yang ditunda','hal yang dilupakan'],why:'"Prioritas" berarti hal yang didahulukan atau diutamakan.'},
+ {q:'Arti kata "transparan" adalah...',c:'jelas dan terbuka',w:['tertutup','gelap'],why:'"Transparan" berarti tembus pandang; dalam pemakaian lain berarti terbuka dan jelas.'},
+ {q:'Arti kata "empati" adalah...',c:'ikut merasakan perasaan orang lain',w:['merasa lebih hebat','tidak peduli'],why:'"Empati" berarti kemampuan menyelami perasaan orang lain.'},
+ {q:'Arti kata "urgen" adalah...',c:'mendesak',w:['santai','berlebihan'],why:'"Urgen" berarti sangat penting dan mendesak.'},
+ {q:'Arti kata "mutakhir" adalah...',c:'terbaru',w:['terlama','tertinggal'],why:'"Mutakhir" berarti terbaru atau terkini.'},
+ {q:'Arti kata "anonim" adalah...',c:'tanpa nama',w:['bernama panjang','terkenal'],why:'"Anonim" berarti tidak diketahui namanya.'},
+ {q:'Arti kata "gamblang" adalah...',c:'jelas dan terang',w:['samar','rumit'],why:'"Gamblang" berarti jelas dan mudah dipahami.'},
+ {q:'Arti kata "rancu" adalah...',c:'kacau; tidak jelas',w:['sangat rapi','lengkap'],why:'"Rancu" berarti kacau atau membingungkan.'},
+ {q:'Arti kata "lestari" adalah...',c:'tetap bertahan dan tidak berubah',w:['cepat rusak','mudah hilang'],why:'"Lestari" berarti tetap seperti keadaan semula dan tidak berubah.'},
+ {q:'Arti kata "rawan" adalah...',c:'mudah menimbulkan bahaya',w:['sangat aman','sangat murah'],why:'"Rawan" berarti mudah terjadi hal yang tidak diinginkan.'},
+ {q:'Arti kata "kendala" adalah...',c:'hambatan',w:['hadiah','kemudahan'],why:'"Kendala" berarti halangan atau hambatan.'},
+ {q:'Arti kata "defisit" adalah...',c:'kekurangan jumlah',w:['kelebihan jumlah','jumlah tetap'],why:'"Defisit" berarti kekurangan, terutama dalam keuangan.'},
+ {q:'Arti kata "etika" adalah...',c:'nilai tentang baik dan buruk',w:['cara berpakaian','jenis makanan'],why:'"Etika" adalah ilmu tentang baik dan buruk serta kewajiban moral.'},
+ {q:'Arti kata "tuntas" adalah...',c:'selesai sepenuhnya',w:['baru dimulai','dibatalkan'],why:'"Tuntas" berarti habis atau selesai seluruhnya.'},
+ {q:'Arti kata "imbau" adalah...',c:'ajakan atau seruan',w:['larangan keras','hukuman'],why:'"Imbauan" berarti seruan atau ajakan, bukan "himbauan".'},
+ {q:'Sinonim kata "pandai" adalah...',c:'pintar',w:['malas','lambat'],why:'"Pandai" bersinonim dengan "pintar".'},
+ {q:'Antonim kata "rajin" adalah...',c:'malas',w:['tekun','giat'],why:'Lawan kata "rajin" adalah "malas".'},
+ {q:'Antonim kata "hemat" adalah...',c:'boros',w:['irit','cermat'],why:'Lawan kata "hemat" adalah "boros".'},
+ {q:'Antonim kata "optimis" adalah...',c:'pesimis',w:['antusias','realistis'],why:'Lawan kata "optimis" adalah "pesimis".'},
+ {q:'Sinonim kata "cepat" adalah...',c:'lekas',w:['lamban','santai'],why:'"Cepat" bersinonim dengan "lekas".'},
+ {q:'Sinonim kata "indah" adalah...',c:'elok',w:['buruk','kusam'],why:'"Indah" bersinonim dengan "elok".'},
+ {q:'Antonim kata "kuno" adalah...',c:'modern',w:['antik','tua'],why:'Lawan kata "kuno" adalah "modern".'},
+ {q:'Antonim kata "maju" adalah...',c:'mundur',w:['melesat','bergerak'],why:'Lawan kata "maju" adalah "mundur".'},
+ {q:'Kalimat mana yang paling efektif?',c:'Para guru mengikuti rapat.',w:['Para guru-guru mengikuti rapat.'],why:'"Para" sudah menyatakan jamak, jadi kata ulang "guru-guru" berlebihan.'},
+ {q:'Kalimat mana yang paling efektif?',c:'Kami mundur dari kerumunan.',w:['Kami mundur ke belakang dari kerumunan.'],why:'"Mundur" sudah berarti bergerak ke belakang (pleonasme).'},
+ {q:'Kalimat mana yang paling efektif?',c:'Dia maju ke panggung.',w:['Dia maju ke depan panggung.'],why:'"Maju" sudah berarti bergerak ke depan.'},
+ {q:'Kalimat mana yang paling efektif?',c:'Anak itu masuk kelas.',w:['Anak itu masuk ke dalam kelas.'],why:'"Masuk" sudah menyatakan arah ke dalam.'},
+ {q:'Kalimat mana yang paling efektif?',c:'Warga bergotong royong membersihkan selokan.',w:['Warga saling bergotong royong membersihkan selokan.'],why:'"Gotong royong" sudah bermakna saling membantu.'},
+ {q:'Kalimat mana yang paling efektif?',c:'Dia belajar agar lulus.',w:['Dia belajar agar supaya lulus.'],why:'"Agar" dan "supaya" bermakna sama, cukup pakai salah satu.'},
+ {q:'Kalimat mana yang paling efektif?',c:'Rumah itu adalah milik nenek.',w:['Rumah itu adalah merupakan milik nenek.'],why:'"Adalah" dan "merupakan" bermakna sama, tidak dipakai berurutan.'},
+ {q:'Kalimat mana yang paling efektif?',c:'Banyak orang kembali ke kampung halaman.',w:['Banyak orang kembali lagi ke kampung halaman.'],why:'"Kembali" sudah berarti pulang atau datang lagi.'},
+ {q:'Kalimat mana yang paling efektif?',c:'Jumlah peserta sekitar seratus orang.',w:['Jumlah peserta kurang lebih sekitar seratus orang.'],why:'"Kurang lebih" dan "sekitar" bermakna sama, pakai salah satu.'},
+ {q:'Kalimat mana yang paling efektif?',c:'Dia berlari demi kesehatan.',w:['Dia berlari demi untuk kesehatan.'],why:'"Demi" dan "untuk" tidak dipakai bersamaan.'},
+ {q:'Kalimat mana yang paling efektif?',c:'Meskipun sakit, dia tetap sekolah.',w:['Meskipun sakit, tetapi dia tetap sekolah.'],why:'"Meskipun" tidak dipasangkan dengan "tetapi" dalam satu kalimat.'},
+ {q:'Kalimat mana yang tersusun benar?',c:'Karena hujan, dia terlambat.',w:['Karena hujan, sehingga dia terlambat.'],why:'"Karena" dan "sehingga" tidak dipakai bersamaan karena kalimat jadi tidak tuntas.'},
+ {q:'Kalimat mana yang mempunyai subjek jelas?',c:'Siswa wajib hadir tepat waktu.',w:['Bagi siswa wajib hadir tepat waktu.'],why:'Subjek tidak boleh didahului kata depan seperti "bagi".'},
+ {q:'Kalimat mana yang tersusun benar?',c:'Rumah tempat saya tinggal sangat besar.',w:['Rumah di mana saya tinggal sangat besar.'],why:'"Di mana" sebagai kata penghubung adalah pengaruh bahasa asing. Pakai "tempat".'},
+ {q:'Kalimat mana yang baku?',c:'Dia mengatakan akan datang besok.',w:['Dia bilang mau datang besok.'],why:'Dalam ragam baku dipakai "mengatakan" dan "akan".'},
+ {q:'Kalimat mana yang baku?',c:'Mereka tidak dapat hadir.',w:['Mereka nggak bisa hadir.'],why:'"Nggak" adalah ragam percakapan, bakunya "tidak".'},
+ {q:'Kalimat mana yang baku?',c:'Dia sudah mandi, lalu makan.',w:['Dia sudah mandi, trus makan.'],why:'"Trus" tidak baku. Gunakan "lalu" atau "kemudian".'},
+ {q:'Kata penghubung antarkalimat yang tepat: "Dia rajin belajar. ___, nilainya selalu bagus."',c:'Oleh karena itu',w:['Akan tetapi','Meskipun'],why:'Hubungan sebab akibat memakai "oleh karena itu".'},
+ {q:'Kata penghubung antarkalimat yang tepat: "Hujan sangat deras. ___ pertandingan tetap berlangsung."',c:'Namun',w:['Oleh karena itu','Selain itu'],why:'Hubungan pertentangan memakai "namun".'},
+ {q:'Kata tanya untuk menanyakan orang adalah...',c:'siapa',w:['apa','mana'],why:'"Siapa" dipakai untuk menanyakan orang.'},
+ {q:'Kata tanya untuk menanyakan alasan adalah...',c:'mengapa',w:['bagaimana','kapan'],why:'"Mengapa" dipakai untuk menanyakan sebab atau alasan.'},
+ {q:'Kata "berlari" termasuk jenis kata...',c:'kata kerja (verba)',w:['kata benda (nomina)','kata sifat (adjektiva)'],why:'"Berlari" menyatakan perbuatan, jadi verba.'},
+ {q:'Kata "indah" termasuk jenis kata...',c:'kata sifat (adjektiva)',w:['kata kerja (verba)','kata depan (preposisi)'],why:'"Indah" menyatakan sifat atau keadaan.'},
+ {q:'Kata "meja" termasuk jenis kata...',c:'kata benda (nomina)',w:['kata kerja (verba)','kata sifat (adjektiva)'],why:'"Meja" adalah nama benda.'},
+ {q:'Kata "dan" termasuk jenis kata...',c:'kata sambung (konjungsi)',w:['kata benda (nomina)','kata kerja (verba)'],why:'"Dan" menghubungkan kata, frasa, atau klausa.'},
+ {q:'Pada kalimat "Adik membaca buku di perpustakaan.", "membaca" berfungsi sebagai...',c:'predikat',w:['subjek','objek'],why:'"Membaca" menyatakan perbuatan, jadi predikat.'},
+ {q:'Pada kalimat "Adik membaca buku di perpustakaan.", "buku" berfungsi sebagai...',c:'objek',w:['subjek','keterangan tempat'],why:'"Buku" adalah sasaran perbuatan membaca, jadi objek.'},
+ {q:'Pada kalimat "Adik membaca buku di perpustakaan.", "di perpustakaan" berfungsi sebagai...',c:'keterangan tempat',w:['objek','predikat'],why:'"Di perpustakaan" menyatakan tempat.'},
+ {q:'Majas pada kalimat "Angin berbisik di telingaku" adalah...',c:'personifikasi',w:['hiperbola','simile'],why:'Benda mati (angin) diberi sifat manusia (berbisik): personifikasi.'},
+ {q:'Majas pada kalimat "Aku sudah menunggu seribu tahun" adalah...',c:'hiperbola',w:['personifikasi','metafora'],why:'Pernyataan dilebih-lebihkan: hiperbola.'},
+ {q:'Majas pada kalimat "Wajahnya sekeras batu" adalah...',c:'simile (perumpamaan)',w:['hiperbola','ironi'],why:'Perbandingan memakai kata pembanding "se-": simile.'},
+ {q:'Majas pada kalimat "Kota itu lautan manusia" adalah...',c:'metafora',w:['simile','personifikasi'],why:'Perbandingan langsung tanpa kata pembanding: metafora.'},
+ {q:'Gagasan utama dalam sebuah paragraf disebut...',c:'ide pokok',w:['judul','kata sambung'],why:'Ide pokok adalah gagasan utama yang dikembangkan dalam paragraf.'},
+ {q:'Kalimat yang menjelaskan kalimat utama disebut...',c:'kalimat penjelas',w:['kalimat tanya','kalimat judul'],why:'Kalimat penjelas mengembangkan kalimat utama.'},
+];
+(function(){
+ var ME=[['pukul','memukul','mempukul','mepukul'],['tulis','menulis','mentulis','metulis'],['kirim','mengirim','mekirim','menkirim'],
+ ['ambil','mengambil','meambil','menambil'],['ajar','mengajar','meajar','menajar'],['pakai','memakai','mempakai','mepakai'],['cari','mencari','mecari','mengcari'],
+ ['tari','menari','metari','mentari'],['sewa','menyewa','mensewa','mesewa'],['potong','memotong','mempotong','mepotong'],['tolong','menolong','mentolong','metolong'],
+ ['dengar','mendengar','medengar','mengdengar'],['undang','mengundang','meundang','menundang'],['gambar','menggambar','megambar','mengambar'],['ketik','mengetik','meketik','mengketik'],
+ ['cuci','mencuci','mecuci','mengcuci'],['buang','membuang','mebuang','mengbuang'],['beli','membeli','mebeli','mengbeli'],['bawa','membawa','mebawa','mengbawa'],
+ ['jahit','menjahit','mejahit','mengjahit'],['tangkap','menangkap','metangkap','mentangkap'],['siram','menyiram','mesiram','mensiram'],['ganti','mengganti','meganti','menganti'],
+ ['kupas','mengupas','mekupas','menkupas'],['lukis','melukis','mellukis','menlukis'],['rawat','merawat','mengrawat','menrawat'],['ikat','mengikat','meikat','menikat'],
+ ['isi','mengisi','meisi','menisi'],['tebang','menebang','metebang','mentebang'],['sulap','menyulap','mesulap','mensulap'],['cat','mengecat','mencat','mecat'],
+ ['pel','mengepel','mempel','mepel'],['las','mengelas','melas','menlas'],['panggil','memanggil','mempanggil','mepanggil'],['tanam','menanam','metanam','mentanam']];
+ ME.forEach(function(m){QS.push({q:'Kata dasar "'+m[0]+'" diberi awalan me- menjadi...',c:m[1],w:[m[2],m[3]],why:'me- + '+m[0]+' = '+m[1]+'. Ini mengikuti aturan perubahan bunyi awalan me-.'})});
+})();
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function deckOrder(seed,n){var r=mulberry32(seed),a=[],i;for(i=0;i<n;i++)a.push(i);for(i=n-1;i>0;i--){var j=Math.floor(r()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+var ALLQ=null;
+function buildAll(){ALLQ=[];PAIRS.forEach(function(p){ALLQ.push({p:p})});QS.forEach(function(q){ALLQ.push({q:q})})}
+function makeQ(){
+  if(!ALLQ)buildAll();
+  if(!S.qseed||S.qpos>=ALLQ.length||S.qpos<0){S.qseed=Math.floor(Math.random()*4e9)+1;S.qpos=0}
+  var e=ALLQ[deckOrder(S.qseed,ALLQ.length)[S.qpos]];S.qpos++;save();
+  if(e.p){
+    var p=e.p;
+    if(Math.random()<0.5)return mcqFrom({q:'Manakah bentuk yang baku?',c:p[0],w:[p[1]],why:'"'+p[0]+'" adalah bentuk baku. "'+p[1]+'" tidak baku.'});
+    return mcqFrom({q:'Manakah bentuk yang TIDAK baku?',c:p[1],w:[p[0]],why:'"'+p[1]+'" tidak baku. Bentuk bakunya "'+p[0]+'".'});
+  }
+  return mcqFrom(e.q);
+}
+function mcqFrom(q){
+  var opts=shuffle([q.c].concat(q.w));
+  return {q:q.q,opts:opts,a:opts.indexOf(q.c),why:q.why};
+}
+var LEVEL_LEN=2800;
+var LQ=[
+ [ /* Jakarta */
+  {type:'order',words:['wisatawan','itu','mengunjungi','Monumen','Nasional','kemarin'],ok:['wisatawan itu mengunjungi monumen nasional kemarin','kemarin wisatawan itu mengunjungi monumen nasional'],show:'Wisatawan itu mengunjungi Monumen Nasional kemarin.',why:'Pola dasarnya: subjek (wisatawan itu), predikat (mengunjungi), objek (Monumen Nasional), keterangan waktu (kemarin).'},
+  {type:'order',words:['Transjakarta','melayani','penumpang','setiap','hari'],ok:['transjakarta melayani penumpang setiap hari','setiap hari transjakarta melayani penumpang'],show:'Transjakarta melayani penumpang setiap hari.',why:'Subjek, predikat, objek, lalu keterangan waktu. Keterangan waktu boleh juga di awal kalimat.'},
+  {type:'mcq',q:'Lengkapi kalimat: "Warga ___ di halte menunggu bus."',c:'antre',w:['antri','anteri'],why:'Bentuk baku dari "antri" adalah "antre".'},
+  {type:'mcq',q:'Kalimat mana yang paling efektif?',c:'Banyak wisatawan berkunjung ke Monas.',w:['Banyak para wisatawan berkunjung ke Monas.','Para wisatawan-wisatawan berkunjung ke Monas.'],why:'"Banyak" dan "para" sama-sama menyatakan jamak, jadi cukup pakai salah satu. Kata ulang "wisatawan-wisatawan" bersama "para" juga berlebihan.'}
+ ],
+ [ /* Yogyakarta */
+  {type:'order',words:['Candi','Prambanan','terletak','di','perbatasan','Yogyakarta','dan','Jawa','Tengah'],ok:['candi prambanan terletak di perbatasan yogyakarta dan jawa tengah','di perbatasan yogyakarta dan jawa tengah terletak candi prambanan'],show:'Candi Prambanan terletak di perbatasan Yogyakarta dan Jawa Tengah.',why:'Subjek (Candi Prambanan) diikuti predikat (terletak) dan keterangan tempat.'},
+  {type:'order',words:['wisatawan','membeli','batik','di','Pasar','Beringharjo'],ok:['wisatawan membeli batik di pasar beringharjo','di pasar beringharjo wisatawan membeli batik'],show:'Wisatawan membeli batik di Pasar Beringharjo.',why:'Keterangan tempat ("di Pasar Beringharjo") boleh di akhir atau di awal kalimat.'},
+  {type:'mcq',q:'Lengkapi kalimat: "Gudeg adalah makanan ___ dari Yogyakarta."',c:'khas',w:['kas','khass'],why:'Untuk arti "istimewa dari suatu daerah" bentuk bakunya "khas". "Kas" berarti uang tunai.'},
+  {type:'mcq',q:'Kalimat mana yang paling efektif?',c:'Mereka naik ke candi untuk melihat matahari terbit.',w:['Mereka naik ke atas candi untuk melihat matahari terbit.','Mereka naik-naik ke atas candi untuk melihat matahari terbit.'],why:'"Naik" sudah berarti bergerak ke atas, jadi "naik ke atas" berlebihan (pleonasme).'}
+ ],
+ [ /* Bali */
+  {type:'order',words:['penari','membawakan','tari','kecak','di','pura'],ok:['penari membawakan tari kecak di pura','di pura penari membawakan tari kecak'],show:'Penari membawakan tari kecak di pura.',why:'Subjek (penari), predikat (membawakan), objek (tari kecak), keterangan tempat (di pura).'},
+  {type:'order',words:['wisatawan','menikmati','matahari','terbenam','di','Pantai','Kuta'],ok:['wisatawan menikmati matahari terbenam di pantai kuta','di pantai kuta wisatawan menikmati matahari terbenam'],show:'Wisatawan menikmati matahari terbenam di Pantai Kuta.',why:'Nama tempat seperti Pantai Kuta ditulis dengan huruf kapital pada tiap unsurnya.'},
+  {type:'mcq',q:'Lengkapi kalimat: "Upacara adat itu berlangsung dengan ___."',c:'khidmat',w:['hidmat','khidmad'],why:'Bentuk baku adalah "khidmat", yang berarti penuh penghormatan dan tenang.'},
+  {type:'mcq',q:'Kalimat mana yang paling efektif?',c:'Pura itu sangat indah.',w:['Pura itu sangat amat indah.','Pura itu amat sangat indah sekali.'],why:'"Sangat", "amat", dan "sekali" sama-sama menguatkan makna. Cukup pakai satu.'}
+ ],
+ [ /* Toraja */
+  {type:'order',words:['rumah','tongkonan','memiliki','atap','yang','melengkung'],ok:['rumah tongkonan memiliki atap yang melengkung'],show:'Rumah tongkonan memiliki atap yang melengkung.',why:'Subjek (rumah tongkonan), predikat (memiliki), objek (atap), lalu pelengkap "yang melengkung".'},
+  {type:'order',words:['wisatawan','mengagumi','ukiran','kayu','di','desa','itu'],ok:['wisatawan mengagumi ukiran kayu di desa itu','di desa itu wisatawan mengagumi ukiran kayu'],show:'Wisatawan mengagumi ukiran kayu di desa itu.',why:'Keterangan tempat boleh di akhir atau di awal kalimat.'},
+  {type:'mcq',q:'Lengkapi kalimat: "Kami berkunjung tidak ___ berwisata, tetapi juga belajar budaya."',c:'sekadar',w:['sekedar','sekdar'],why:'Bentuk baku adalah "sekadar", bukan "sekedar".'},
+  {type:'mcq',q:'Kalimat mana yang paling efektif?',c:'Desa itu terkenal akan keindahan alamnya.',w:['Desa itu terkenal akan keindahan alamnya yang indah.','Desa itu terkenal karena alamnya yang keindahannya.'],why:'"Keindahan" sudah mengandung makna "indah", jadi "yang indah" berlebihan.'}
+ ]
+];
+LQ[0]=LQ[0].concat([
+  {type:'order',words:["petugas", "membersihkan", "taman", "kota", "setiap", "pagi"],ok:["petugas membersihkan taman kota setiap pagi", "setiap pagi petugas membersihkan taman kota"],show:"Petugas membersihkan taman kota setiap pagi.",why:"Subjek (petugas), predikat (membersihkan), objek (taman kota), keterangan waktu (setiap pagi)."},
+  {type:'order',words:["komuter", "menaiki", "kereta", "listrik", "menuju", "kantor"],ok:["komuter menaiki kereta listrik menuju kantor"],show:"Komuter menaiki kereta listrik menuju kantor.",why:"Subjek (komuter), predikat (menaiki), objek (kereta listrik), keterangan tujuan (menuju kantor)."},
+  {type:'order',words:["pedagang", "menjual", "kerak", "telur", "di", "Monas"],ok:["pedagang menjual kerak telur di monas", "di monas pedagang menjual kerak telur"],show:"Pedagang menjual kerak telur di Monas.",why:"Keterangan tempat boleh di akhir atau di awal kalimat."},
+  {type:'mcq',q:"Penulisan nama tempat yang benar:",c:"Kami tinggal di Jakarta Selatan.",w:["Kami tinggal di jakarta selatan.", "Kami tinggal di Jakarta selatan."],why:"Nama diri geografis ditulis dengan huruf kapital pada setiap unsurnya."},
+  {type:'mcq',q:"Kalimat mana yang baku?",c:"Para penumpang menunggu di halte.",w:["Para penumpang pada nunggu di halte.", "Penumpang-penumpang pada menunggu di halte."],why:"Ragam baku tidak memakai \"pada\" untuk menyatakan jamak dan tidak memakai bentuk \"nunggu\"."},
+  {type:'mcq',q:"Kalimat mana yang paling efektif?",c:"Banyak orang kembali ke kampung halaman.",w:["Banyak orang kembali lagi ke kampung halaman.", "Banyak orang-orang kembali ke kampung halaman."],why:"\"Kembali\" sudah berarti datang atau pulang lagi, dan \"banyak\" sudah menyatakan jamak."},
+  {type:'order',words:["Gubernur", "meresmikan", "jalur", "sepeda", "baru", "kemarin"],ok:["gubernur meresmikan jalur sepeda baru kemarin", "kemarin gubernur meresmikan jalur sepeda baru"],show:"Gubernur meresmikan jalur sepeda baru kemarin.",why:"Keterangan waktu \"kemarin\" boleh di akhir atau di awal kalimat."},
+  {type:'mcq',q:"Pilih bentuk baku untuk melengkapi: \"Halte itu ___ penumpang sejak pagi.\"",c:"dipadati",w:["dipadatin", "dipadatkan lagi"],why:"Bentuk baku: dipadati. Imbuhan -in adalah ragam percakapan."}
+]);
+LQ[1]=LQ[1].concat([
+  {type:'order',words:["perajin", "membuat", "gerabah", "di", "Kasongan"],ok:["perajin membuat gerabah di kasongan", "di kasongan perajin membuat gerabah"],show:"Perajin membuat gerabah di Kasongan.",why:"Bentuk baku \"perajin\". Keterangan tempat boleh di awal atau di akhir."},
+  {type:'order',words:["wisatawan", "menaiki", "becak", "menyusuri", "Malioboro"],ok:["wisatawan menaiki becak menyusuri malioboro"],show:"Wisatawan menaiki becak menyusuri Malioboro.",why:"Subjek (wisatawan), predikat (menaiki), objek (becak), keterangan (menyusuri Malioboro)."},
+  {type:'order',words:["pemandu", "menjelaskan", "sejarah", "candi", "kepada", "turis"],ok:["pemandu menjelaskan sejarah candi kepada turis"],show:"Pemandu menjelaskan sejarah candi kepada turis.",why:"Subjek, predikat, objek, lalu pelengkap \"kepada turis\"."},
+  {type:'mcq',q:"Lengkapi: \"Mereka ___ ke Keraton setiap akhir pekan.\"",c:"berkunjung",w:["mengunjung", "kunjung"],why:"ber- + kunjung = berkunjung (tanpa objek). \"Mengunjungi\" memerlukan objek."},
+  {type:'mcq',q:"Kalimat mana yang baku?",c:"Para wisatawan berfoto di depan candi.",w:["Para wisatawan berphoto di depan candi.", "Para wisatawan-wisatawan berfoto di depan candi."],why:"Bentuk baku \"foto\", dan \"para\" sudah menyatakan jamak."},
+  {type:'mcq',q:"Kalimat mana yang paling efektif?",c:"Pengunjung dilarang merokok di area candi.",w:["Pengunjung dilarang untuk merokok di area candi.", "Para pengunjung-pengunjung dilarang merokok di area candi."],why:"Kata \"untuk\" setelah \"dilarang\" tidak diperlukan."},
+  {type:'order',words:["mahasiswa", "mengikuti", "pawai", "budaya", "di", "alun-alun"],ok:["mahasiswa mengikuti pawai budaya di alun-alun", "di alun-alun mahasiswa mengikuti pawai budaya"],show:"Mahasiswa mengikuti pawai budaya di alun-alun.",why:"Keterangan tempat boleh di awal atau di akhir."},
+  {type:'mcq',q:"Penulisan yang benar:",c:"Hari Sabtu kami berkunjung ke Keraton Yogyakarta.",w:["hari sabtu kami berkunjung ke keraton yogyakarta.", "Hari sabtu kami berkunjung ke keraton Yogyakarta."],why:"Nama hari dan nama bangunan atau tempat resmi ditulis dengan huruf kapital."}
+]);
+LQ[2]=LQ[2].concat([
+  {type:'order',words:["penduduk", "memasang", "penjor", "menjelang", "hari", "raya"],ok:["penduduk memasang penjor menjelang hari raya", "menjelang hari raya penduduk memasang penjor"],show:"Penduduk memasang penjor menjelang hari raya.",why:"Keterangan waktu boleh di awal atau di akhir kalimat."},
+  {type:'order',words:["anak-anak", "berlatih", "menari", "di", "balai", "banjar"],ok:["anak-anak berlatih menari di balai banjar", "di balai banjar anak-anak berlatih menari"],show:"Anak-anak berlatih menari di balai banjar.",why:"Subjek (anak-anak), predikat (berlatih), pelengkap (menari), keterangan tempat."},
+  {type:'order',words:["wisatawan", "membeli", "kain", "endek", "sebagai", "oleh-oleh"],ok:["wisatawan membeli kain endek sebagai oleh-oleh"],show:"Wisatawan membeli kain endek sebagai oleh-oleh.",why:"Subjek, predikat, objek, lalu keterangan tujuan."},
+  {type:'mcq',q:"Pilih yang baku:",c:"Wisatawan menikmati suasana yang tenteram.",w:["Wisatawan menikmati suasana yang tentram.", "Wisatawan menikmati suasana yang tentrem."],why:"Bentuk baku \"tenteram\"."},
+  {type:'mcq',q:"Kalimat mana yang paling efektif?",c:"Seluruh warga mengikuti upacara.",w:["Seluruh para warga mengikuti upacara.", "Semua para warga mengikuti upacara."],why:"\"Seluruh\", \"semua\", dan \"para\" sama-sama menyatakan jamak, cukup satu."},
+  {type:'mcq',q:"Penulisan yang benar:",c:"Hari Raya Nyepi dirayakan di Bali.",w:["hari raya nyepi dirayakan di bali.", "Hari raya Nyepi dirayakan di bali."],why:"Nama hari raya dan nama tempat ditulis dengan huruf kapital."},
+  {type:'order',words:["nelayan", "menarik", "jaring", "di", "pantai", "Sanur"],ok:["nelayan menarik jaring di pantai sanur", "di pantai sanur nelayan menarik jaring"],show:"Nelayan menarik jaring di Pantai Sanur.",why:"Keterangan tempat boleh di akhir atau di awal kalimat."},
+  {type:'mcq',q:"Pilih yang baku: \"Ia mengikuti ___ di pura.\"",c:"upacara",w:["upacarah", "upacra"],why:"Bentuk baku: upacara."}
+]);
+LQ[3]=LQ[3].concat([
+  {type:'order',words:["upacara", "adat", "itu", "dihadiri", "ribuan", "orang"],ok:["upacara adat itu dihadiri ribuan orang"],show:"Upacara adat itu dihadiri ribuan orang.",why:"Kalimat pasif: subjek (upacara adat itu), predikat (dihadiri), pelaku (ribuan orang)."},
+  {type:'order',words:["para", "pemandu", "menunjukkan", "kuburan", "batu", "kepada", "tamu"],ok:["para pemandu menunjukkan kuburan batu kepada tamu"],show:"Para pemandu menunjukkan kuburan batu kepada tamu.",why:"Subjek, predikat, objek, lalu pelengkap \"kepada tamu\"."},
+  {type:'order',words:["kopi", "Toraja", "terkenal", "hingga", "mancanegara"],ok:["kopi toraja terkenal hingga mancanegara"],show:"Kopi Toraja terkenal hingga mancanegara.",why:"Subjek (kopi Toraja), predikat (terkenal), keterangan (hingga mancanegara)."},
+  {type:'mcq',q:"Pilih bentuk baku:",c:"Ia mengajukan izin tidak masuk kerja.",w:["Ia mengajukan ijin tidak masuk kerja.", "Ia mengajukan idzin tidak masuk kerja."],why:"Bentuk baku adalah \"izin\"."},
+  {type:'mcq',q:"Lengkapi: \"Perjalanan ke Toraja ___ waktu delapan jam.\"",c:"memerlukan",w:["mempunyai", "menyediakan"],why:"\"Memerlukan\" berarti membutuhkan."},
+  {type:'mcq',q:"Kalimat mana yang paling efektif?",c:"Kami mundur dari kerumunan.",w:["Kami mundur ke belakang dari kerumunan.", "Kami mundur lagi ke belakang kerumunan."],why:"\"Mundur\" sudah berarti bergerak ke belakang."},
+  {type:'order',words:["turis", "mengabadikan", "pemandangan", "sawah", "dengan", "kamera"],ok:["turis mengabadikan pemandangan sawah dengan kamera"],show:"Turis mengabadikan pemandangan sawah dengan kamera.",why:"Subjek, predikat, objek, lalu keterangan alat."},
+  {type:'mcq',q:"Pilih yang baku: \"Kerbau adalah hewan yang ___ dalam upacara adat.\"",c:"dihormati",w:["diphormati", "dihormatin"],why:"Bentuk baku: dihormati."}
+]);
+function levelQ(lv){
+  var l=lv%LQ.length,b=LQ[l];
+  if(!Array.isArray(S.lqp))S.lqp=[0,0,0,0];
+  var n=S.lqp[l]||0;S.lqp[l]=n+1;save();
+  return b[deckOrder(7000+l*131+Math.floor(n/b.length)*17,b.length)[n%b.length]];
+}
+
+/* ---------- penyimpanan ---------- */
+var S={coins:0,keys:2,owned:['betawi'],skin:'betawi',boosts:1,streak:0,last:'',best:0,off:0,players:4,nick:'',qseed:0,qpos:0,lqp:[0,0,0,0]};
+try{
+  var raw=localStorage.getItem('bakusurfers.v1'),legacy=false;
+  if(!raw){raw=localStorage.getItem('laribaku.v1');legacy=!!raw}
+  if(raw){var o=JSON.parse(raw);for(var k in o)if(Object.prototype.hasOwnProperty.call(S,k)&&!(legacy&&(k==='owned'||k==='skin')))S[k]=o[k]}
+}catch(e){}
+S.off=0;
+if(!Array.isArray(S.owned))S.owned=['betawi'];
+S.owned=S.owned.filter(function(id){return SKINS.some(function(sk){return sk.id===id})});
+if(S.owned.indexOf('betawi')<0)S.owned.unshift('betawi');
+if(S.owned.indexOf(S.skin)<0)S.skin='betawi';
+function save(){try{localStorage.setItem('bakusurfers.v1',JSON.stringify(S))}catch(e){}}
+function pad2(n){return n<10?'0'+n:''+n}
+function dayStr(delta){var d=new Date(Date.now()+(delta||0)*86400000);return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
+function reward(n){return 35+15*(n-1)}
+
+/* ---------- gambar karakter ---------- */
+function rr(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+var OUT='#1d1636',SKIN='#ffcf9e';
+function limb(c,x1,y1,x2,y2,w,col){
+  c.lineCap='round';c.lineJoin='round';
+  c.strokeStyle=OUT;c.lineWidth=w+5;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+  c.strokeStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+}
+function hand(c,x,y){c.fillStyle=SKIN;c.strokeStyle=OUT;c.lineWidth=2.5;c.beginPath();c.arc(x,y,5,0,6.283);c.fill();c.stroke()}
+function shoe(c,x,y,col){c.fillStyle=col;c.strokeStyle=OUT;c.lineWidth=2.5;c.beginPath();c.ellipse(x+3,y,9,5,0,0,6.283);c.fill();c.stroke()}
+function pat(c,type,pa,pb,x,y,w,h){
+  var a,b,ia,ib;
+  c.fillStyle=pa;c.strokeStyle=pa;
+  if(type==='stripe'){for(a=0;a<w;a+=7)c.fillRect(x+a,y,3.2,h)}
+  else if(type==='hstripe'){for(a=0;a<h;a+=7)c.fillRect(x,y+a,w,3.4)}
+  else if(type==='stripes'){for(a=2;a<h;a+=7)c.fillRect(x,y+a,w,2.4)}
+  else if(type==='dots'){for(a=0,ia=0;a<h;a+=7,ia++)for(b=0;b<w;b+=7){c.beginPath();c.arc(x+b+(ia%2?3.5:0),y+a+2,1.7,0,6.283);c.fill()}}
+  else if(type==='batik'){c.lineWidth=1.5;for(a=-h;a<w+h;a+=9){c.beginPath();c.moveTo(x+a,y);c.lineTo(x+a+h,y+h);c.stroke();c.beginPath();c.moveTo(x+a+h,y);c.lineTo(x+a,y+h);c.stroke()}}
+  else if(type==='poleng'){for(a=0,ia=0;a<h;a+=6,ia++)for(b=0,ib=0;b<w;b+=6,ib++)if((ia+ib)%2===0)c.fillRect(x+b,y+a,6,6)}
+  else if(type==='plaid'){for(a=0;a<w;a+=8)c.fillRect(x+a,y,2.2,h);for(b=0;b<h;b+=8)c.fillRect(x,y+b,w,2.2)}
+  else if(type==='songket'){c.fillRect(x,y,w,3);c.fillRect(x,y+h-4,w,3);for(a=0;a<w;a+=8){c.beginPath();c.moveTo(x+a+4,y+h*0.35);c.lineTo(x+a+8,y+h*0.55);c.lineTo(x+a+4,y+h*0.75);c.lineTo(x+a,y+h*0.55);c.closePath();c.fill()}}
+  else if(type==='beads'){for(a=3,ia=0;a<h;a+=6,ia++)for(b=3;b<w;b+=6){c.beginPath();c.arc(x+b+(ia%2?2:0),y+a,1.6,0,6.283);c.fill()}}
+  else if(type==='gold'){c.fillRect(x+3,y,2.2,h);c.fillRect(x+w-5,y,2.2,h);c.fillRect(x,y+h-5,w,2.5)}
+  else if(type==='rumbai'){for(a=0;a<w;a+=3){c.fillStyle=(a/3)%2?pa:pb;c.fillRect(x+a,y,2.2,h)}for(a=0;a<w;a+=5){c.fillStyle=pa;c.fillRect(x+a,y+h-5,1.6,5)}}
+  else if(type==='ulos'){c.save();c.translate(x+w/2,y+h/2);c.rotate(-0.95);c.fillStyle=pa;c.fillRect(-40,-6,80,12);c.fillStyle=pb;c.fillRect(-40,-1.3,80,2.6);c.restore()}
+}
+function drawHat(c,sk,hx,hy){
+  var h=sk.hat,i,j;
+  c.strokeStyle=OUT;c.lineWidth=3;c.lineJoin='round';c.fillStyle=sk.hatCol;
+  if(h==='polisi'){c.beginPath();c.arc(hx+1,hy-3,16.5,Math.PI,0);c.closePath();c.fill();c.stroke();c.fillStyle='#111111';rr(c,hx+2,hy-9,23,6,3);c.fill();c.stroke();c.fillStyle=sk.hat2;c.beginPath();c.arc(hx+4,hy-15,3.4,0,6.283);c.fill();c.stroke()}
+  else if(h==='tengkolok'){
+    c.beginPath();c.arc(hx+1,hy-2,16.5,Math.PI,0);c.closePath();c.fill();c.stroke();
+    c.fillStyle=sk.hat2;rr(c,hx-15,hy-9,33,5,2);c.fill();c.stroke();
+    c.fillStyle=sk.hatCol;c.beginPath();c.moveTo(hx+8,hy-12);c.quadraticCurveTo(hx+20,hy-30,hx+22,hy-8);c.quadraticCurveTo(hx+14,hy-14,hx+8,hy-12);c.closePath();c.fill();c.stroke();
+  }else if(h==='bando'){
+    c.fillStyle=sk.hatCol;c.beginPath();c.arc(hx+1,hy-1,16.8,Math.PI*1.05,Math.PI*1.95);c.lineWidth=5;c.stroke();c.lineWidth=3;
+    c.strokeStyle=sk.hatCol;c.lineWidth=4;c.beginPath();c.arc(hx+1,hy-1,16,Math.PI*1.08,Math.PI*1.92);c.stroke();c.lineWidth=3;c.strokeStyle=OUT;
+    for(j=0;j<3;j++){var fx=hx-8+j*9,fy=hy-17+(j===1?-3:0);c.fillStyle=sk.hat2;c.beginPath();c.arc(fx,fy,4.2,0,6.283);c.fill();c.stroke();c.fillStyle='#ffffff';c.beginPath();c.arc(fx,fy,1.5,0,6.283);c.fill()}
+  }else if(h==='patang'){
+    c.beginPath();c.arc(hx+1,hy-2,16.5,Math.PI,0);c.closePath();c.fill();c.stroke();
+    c.fillStyle=sk.hat2;rr(c,hx-15,hy-9,33,5,2);c.fill();c.stroke();
+    c.fillStyle=sk.hatCol;c.beginPath();c.moveTo(hx-2,hy-14);c.lineTo(hx+3,hy-32);c.lineTo(hx+11,hy-13);c.closePath();c.fill();c.stroke();
+    c.fillStyle=sk.hat2;c.beginPath();c.arc(hx+3,hy-32,3,0,6.283);c.fill();c.stroke();
+  }else if(h==='cenderawasih'){
+    c.fillStyle='#e63946';
+    for(i=-2;i<=2;i++){c.save();c.translate(hx+1,hy-9);c.rotate(i*0.4);c.fillStyle=i%2?sk.hatCol:'#e63946';c.beginPath();c.ellipse(0,-17,4.6,15,0,0,6.283);c.fill();c.stroke();c.fillStyle=sk.hat2;c.beginPath();c.ellipse(0,-27,2.6,5,0,0,6.283);c.fill();c.restore()}
+    c.strokeStyle=sk.hatCol;c.lineWidth=3;c.beginPath();c.moveTo(hx-8,hy-12);c.quadraticCurveTo(hx-30,hy-20,hx-30,hy+6);c.stroke();c.strokeStyle=OUT;c.lineWidth=3;
+    c.fillStyle='#2f8f4e';rr(c,hx-15,hy-11,33,7,3);c.fill();c.stroke();
+    c.fillStyle=sk.hat2;for(j=0;j<4;j++){c.beginPath();c.arc(hx-9+j*8,hy-7.5,1.7,0,6.283);c.fill()}
+  }else if(h==='bulu'){
+    for(i=-1;i<=1;i++){c.save();c.translate(hx+1,hy-10);c.rotate(i*0.38);c.fillStyle=i===0?sk.hat2:sk.hatCol;c.beginPath();c.ellipse(0,-14,4.4,12,0,0,6.283);c.fill();c.stroke();c.restore()}
+    c.fillStyle=sk.shirt2;rr(c,hx-15,hy-11,33,7,3);c.fill();c.stroke();
+    c.fillStyle=sk.hatCol;for(j=0;j<4;j++)c.fillRect(hx-11+j*8,hy-10,3,5);
+  }
+  else if(h==='peci'){rr(c,hx-12,hy-23,26,15,4);c.fill();c.stroke();c.fillStyle=sk.hat2;c.fillRect(hx-11,hy-11,24,2.6)}
+  else if(h==='blangkon'){
+    c.beginPath();c.arc(hx+1,hy-2,16.5,Math.PI,0);c.closePath();c.fill();c.stroke();
+    c.save();c.beginPath();c.arc(hx+1,hy-2,16.5,Math.PI,0);c.closePath();c.clip();pat(c,'dots',sk.hat2,sk.hat2,hx-16,hy-19,34,16);c.restore();
+    c.fillStyle=sk.hatCol;c.beginPath();c.ellipse(hx-16,hy-5,5,6.5,0,0,6.283);c.fill();c.stroke();
+  }else if(h==='udeng'){
+    c.beginPath();c.arc(hx+1,hy-2,16.5,Math.PI,0);c.closePath();c.fill();c.stroke();
+    c.beginPath();c.moveTo(hx-1,hy-14);c.lineTo(hx+7,hy-29);c.lineTo(hx+12,hy-13);c.closePath();c.fill();c.stroke();
+    c.fillStyle=sk.hat2;rr(c,hx-15,hy-9,33,5,2);c.fill();c.stroke();
+  }else if(h==='tanjak'){
+    c.beginPath();c.arc(hx+1,hy-2,16.5,Math.PI,0);c.closePath();c.fill();c.stroke();
+    c.beginPath();c.moveTo(hx-12,hy-9);c.lineTo(hx+6,hy-34);c.lineTo(hx+17,hy-9);c.closePath();c.fill();c.stroke();
+    c.fillStyle=sk.hat2;rr(c,hx-15,hy-9,33,5,2);c.fill();c.stroke();
+  }else if(h==='odheng'){
+    c.beginPath();c.arc(hx+1,hy-2,16.5,Math.PI,0);c.closePath();c.fill();c.stroke();
+    c.fillStyle=sk.hat2;rr(c,hx-15,hy-9,33,5,2);c.fill();c.stroke();
+    c.fillStyle=sk.hatCol;c.beginPath();c.ellipse(hx+13,hy-12,5.5,4.5,0.4,0,6.283);c.fill();c.stroke();
+  }else if(h==='enggang'){
+    for(i=-2;i<=2;i++){
+      c.save();c.translate(hx+1,hy-10);c.rotate(i*0.34);
+      c.fillStyle='#2b1a10';c.beginPath();c.ellipse(0,-14,5.2,13,0,0,6.283);c.fill();c.stroke();
+      c.fillStyle='#ffffff';c.beginPath();c.ellipse(0,-23,3.2,4.5,0,0,6.283);c.fill();
+      c.restore();
+    }
+    c.fillStyle=sk.hatCol;rr(c,hx-15,hy-11,33,8,3);c.fill();c.stroke();
+    c.fillStyle=sk.hat2;for(j=0;j<5;j++){c.beginPath();c.arc(hx-10+j*6.5,hy-7,1.8,0,6.283);c.fill()}
+  }else if(h==='tali'){
+    rr(c,hx-15,hy-11,33,7,3);c.fill();c.stroke();
+    c.fillStyle=sk.hat2;for(j=0;j<4;j++)c.fillRect(hx-11+j*8,hy-10,3,5);
+    c.fillStyle=sk.hatCol;c.beginPath();c.moveTo(hx-15,hy-8);c.lineTo(hx-24,hy-14);c.lineTo(hx-22,hy-4);c.closePath();c.fill();c.stroke();
+  }else if(h==='kandaure'){
+    rr(c,hx-15,hy-12,33,8,3);c.fill();c.stroke();
+    c.fillStyle=sk.hat2;for(j=0;j<5;j++){c.beginPath();c.arc(hx-10+j*6.5,hy-8,2,0,6.283);c.fill()}
+    c.strokeStyle=sk.hatCol;c.lineWidth=2;for(j=0;j<3;j++){c.beginPath();c.moveTo(hx-14+j*3,hy-5);c.lineTo(hx-16+j*3,hy+6);c.stroke()}
+  }
+}
+function drawLeg(c,x0,y0,P,sk){
+  var kx=x0+P.kx,ky=y0+P.ky,fx=x0+P.fx,fy=y0+P.fy;
+  limb(c,kx,ky,fx,fy,sk.lower==='pants'?10:8,sk.lower==='pants'?sk.pants:SKIN);
+  limb(c,x0,y0,kx,ky,sk.lower==='kain'?9:10,sk.lower==='kain'?SKIN:sk.pants);
+  shoe(c,fx,fy-3,sk.shoe);
+}
+function drawChar(c,x,y,sc,id,ph,tilt){
+  var sk=skinOf(id);SKIN=sk.tone||'#ffcf9e';
+  var TH=17,SH=17,AU=11,AF=11,lean=0.16,PI=Math.PI;
+  function legK(phi){return {t:0.82*Math.sin(phi)+0.08,f:0.28+1.1*Math.pow(Math.max(0,Math.cos(phi)),1.3)}}
+  function legP(L){var kx=Math.sin(L.t)*TH,ky=Math.cos(L.t)*TH,a=L.t-L.f;return {kx:kx,ky:ky,fx:kx+Math.sin(a)*SH,fy:ky+Math.cos(a)*SH}}
+  var P1=legP(legK(ph)),P2=legP(legK(ph+PI));
+  var low=Math.max(P1.fy,P2.fy),air=Math.max(0,Math.sin(2*ph+0.4))*2.2;
+  var px=0,py=-low-4-air;
+  var sx=px+Math.sin(lean)*29,sy=py-Math.cos(lean)*29;
+  function arm(shx,shy,ua,fl){var ex=shx+Math.sin(ua)*AU,ey=shy+Math.cos(ua)*AU,fa=ua+fl;return {sx:shx,sy:shy,ex:ex,ey:ey,hx:ex+Math.sin(fa)*AF,hy:ey+Math.cos(fa)*AF}}
+  var A1=arm(sx+4,sy+1,-0.95*Math.sin(ph),1.2+0.35*Math.cos(ph));
+  var A2=arm(sx-4,sy+2,0.95*Math.sin(ph),1.2-0.35*Math.cos(ph));
+  function drawArm(A){limb(c,A.sx,A.sy,A.ex,A.ey,8,sk.shirt);limb(c,A.ex,A.ey,A.hx,A.hy,7,SKIN);hand(c,A.hx,A.hy)}
+  c.save();c.translate(x,y);c.scale(sc,sc);
+  if(tilt)c.rotate(tilt);
+  c.fillStyle='rgba(0,0,0,.28)';c.beginPath();c.ellipse(2,1,22-air*2,6.5,0,0,6.283);c.fill();
+  // sisi jauh
+  drawLeg(c,px-3,py,P2,sk);
+  drawArm(A2);
+  // badan
+  c.save();c.translate(px,py);c.rotate(lean);
+  c.fillStyle=sk.shirt;c.strokeStyle=OUT;c.lineWidth=3;rr(c,-12,-34,24,36,10);c.fill();
+  c.save();rr(c,-12,-34,24,36,10);c.clip();pat(c,sk.motif,sk.shirt2,sk.shirt3||'#ffffff',-12,-34,24,36);c.restore();
+  rr(c,-12,-34,24,36,10);c.stroke();
+  c.restore();
+  // sisi dekat
+  drawLeg(c,px+3,py,P1,sk);
+  if(sk.lower==='kain'){
+    var rh=14+3*Math.sin(ph+0.3),lh=-14+3*Math.sin(ph+PI+0.3),hy2=py+15+1.5*Math.cos(2*ph);
+    var kp=function(){c.beginPath();c.moveTo(px-12,py-5);c.lineTo(px+12,py-5);c.lineTo(px+rh,hy2);c.quadraticCurveTo(px,hy2+4,px+lh,hy2);c.closePath()};
+    kp();c.fillStyle=sk.kain;c.fill();
+    c.save();kp();c.clip();pat(c,sk.kainPat,sk.kain2,sk.kain3||'#ffffff',px-16,py-5,34,24);c.restore();
+    kp();c.strokeStyle=OUT;c.lineWidth=2.5;c.stroke();
+  }
+  if(sk.sash){c.save();c.translate(px,py);c.rotate(lean);c.fillStyle=sk.sash;c.strokeStyle=OUT;c.lineWidth=2.5;rr(c,-13,-9,26,8,3);c.fill();c.stroke();c.restore()}
+  // kepala
+  var hx=sx+Math.sin(lean)*10+3,hy=sy-Math.cos(lean)*10-12-Math.abs(Math.sin(ph))*0.8;
+  c.save();c.translate(hx,hy);c.rotate(lean*0.4+0.03*Math.sin(ph*2));c.translate(-hx,-hy);
+  c.fillStyle=sk.hair;c.strokeStyle=OUT;c.lineWidth=3;c.beginPath();c.arc(hx-2,hy-2,18,0,6.283);c.fill();c.stroke();
+  c.fillStyle=SKIN;c.beginPath();c.arc(hx+1,hy+1,15.5,0,6.283);c.fill();c.stroke();
+  c.fillStyle=sk.hair;c.beginPath();c.arc(hx+1,hy+1,15.5,PI,0);c.quadraticCurveTo(hx+8,hy-6,hx+1,hy-3);c.quadraticCurveTo(hx-8,hy-7,hx-14.5,hy+1);c.closePath();c.fill();
+  c.fillStyle='#ffffff';c.beginPath();c.ellipse(hx-5,hy+2,4.2,5.2,0,0,6.283);c.ellipse(hx+8,hy+2,4.2,5.2,0,0,6.283);c.fill();
+  c.fillStyle=OUT;c.beginPath();c.arc(hx-3.6,hy+3,2.4,0,6.283);c.fill();c.beginPath();c.arc(hx+9.4,hy+3,2.4,0,6.283);c.fill();
+  c.fillStyle='#ffffff';c.beginPath();c.arc(hx-2.8,hy+2,0.9,0,6.283);c.fill();c.beginPath();c.arc(hx+10.2,hy+2,0.9,0,6.283);c.fill();
+  c.fillStyle='rgba(255,110,140,.55)';c.beginPath();c.ellipse(hx-9,hy+9,3.6,2.4,0,0,6.283);c.fill();c.beginPath();c.ellipse(hx+11,hy+9,3.6,2.4,0,0,6.283);c.fill();
+  c.strokeStyle=OUT;c.lineWidth=2;c.beginPath();c.arc(hx+2,hy+7,4.5,0.15*PI,0.85*PI);c.stroke();
+  drawHat(c,sk,hx,hy);
+  c.restore();
+  drawArm(A1);
+  c.restore();
+}
+
+/* ---------- tampilan beranda ---------- */
+var SHOW_HOME=true;
+function renderStats(){
+  $('#stats').innerHTML='<span class="chip">'+COIN+S.coins+' <small>koin</small></span><span class="chip">'+KEY+S.keys+' <small>kunci</small></span><span class="chip">'+S.best+' <small>skor terbaik</small></span>';
+}
+function streakState(){
+  var t=dayStr(0),y=dayStr(-1);
+  if(S.last===t||S.last>t)return {claimed:true,done:S.streak,next:S.streak+1};
+  if(S.last===y)return {claimed:false,done:S.streak,next:S.streak+1};
+  return {claimed:false,done:0,next:1};
+}
+function renderDaily(){
+  var st=streakState(),ws=Math.floor((st.next-1)/7)*7+1,h='';
+  for(var d=ws;d<ws+7;d++){
+    var cls='day'+(d<=st.done?' done':(d===st.next?' now':''));
+    h+='<div class="'+cls+'">Hari '+d+'<b>'+reward(d)+'</b></div>';
+  }
+  $('#daily').innerHTML=
+    '<h2>Hadiah harian</h2>'+
+    '<p style="color:var(--muted)">'+(st.claimed?'Hadiah hari ini sudah diklaim. Besok kamu dapat '+reward(st.next)+' koin.':'Klaim setiap hari, hadiahnya naik terus. Hari ini: '+reward(st.next)+' koin.')+'</p>'+
+    '<div class="days">'+h+'</div>'+
+    '<div class="row"><button class="btn primary" id="btnClaim"'+(st.claimed?' disabled':'')+'>'+(st.claimed?'Sudah diklaim':'Klaim '+reward(st.next)+' koin')+'</button>'+
+    '</div><p class="hintw">Hadiah harian hanya bisa diklaim satu kali per hari. Klaim berikutnya tersedia besok.</p>';
+}
+function renderShop(){
+  var h='<h2>Toko</h2>';
+  SKINS.forEach(function(s){
+    var own=S.owned.indexOf(s.id)>=0,sel=S.skin===s.id,btn;
+    if(sel)btn='<button class="btn small" disabled>Dipakai</button>';
+    else if(own)btn='<button class="btn small" data-use="'+s.id+'">Pakai</button>';
+    else btn='<button class="btn small primary" data-buy="'+s.id+'"'+(S.coins<s.price?' disabled':'')+'>'+COIN+s.price+'</button>';
+    h+='<div class="item"><canvas width="88" height="108" data-skin="'+s.id+'"></canvas><div class="meta"><b>'+s.name+'</b><span class="asal">Asal: '+s.daerah+'</span><span class="dsk">'+s.desc+'</span></div>'+btn+'</div>';
+  });
+  h+='<div class="item"><div class="meta"><b>Boost 2x</b><span>Lari 2x lebih cepat selama 10 detik. Punya: '+S.boosts+'</span></div><button class="btn small primary" data-boost="1"'+(S.coins<BOOST_PRICE?' disabled':'')+'>'+COIN+BOOST_PRICE+'</button></div>';
+  $('#shop').innerHTML=h;
+  var cs=$('#shop').querySelectorAll('canvas[data-skin]');
+  for(var i=0;i<cs.length;i++){var c=cs[i].getContext('2d');c.scale(2,2);drawChar(c,22,52,0.38,cs[i].getAttribute('data-skin'),0.9)}
+}
+function renderSetup(){
+  var h='<h2>Latihan solo</h2><p style="color:var(--muted)">Pilih jumlah pemain simulasi untuk latihan. Untuk main dengan teman sungguhan, pakai room di atas.</p><div class="seg">';
+  for(var n=1;n<=4;n++)h+='<button class="segb'+(S.players===n?' on':'')+'" data-players="'+n+'">'+n+'</button>';
+  h+='</div><p style="color:var(--muted)">'+(S.players===1?'Main sendiri.':'Kamu melawan '+(S.players-1)+' pemain simulasi.')+' Maksimal 4 pemain.</p>';
+  h+='<h2>Peta perjalanan</h2><div class="lvls">';
+  LEVELS.forEach(function(l,i){h+='<div class="lv" style="--a:'+l.edge+'"><i style="background:linear-gradient(180deg,'+l.sky[0]+','+l.sky[1]+')"></i><b>'+(i+1)+'. '+l.name+'</b><span>'+l.tag+'</span></div>'});
+  $('#setup').innerHTML=h+'</div>';
+}
+function renderHome(){renderStats();renderTogether();renderSetup();renderDaily();renderShop()}
+document.addEventListener('click',function(e){
+  var t=e.target.closest?e.target.closest('button'):null;if(!t)return;
+  if(t.id==='btnClaim'){var st=streakState();if(st.claimed)return;S.streak=st.next;S.last=dayStr(0);S.coins+=reward(st.next);save();renderHome()}
+  else if(t.getAttribute('data-buy')){var id=t.getAttribute('data-buy'),sk=skinOf(id);if(S.coins>=sk.price&&S.owned.indexOf(id)<0){S.coins-=sk.price;S.owned.push(id);S.skin=id;save();renderHome()}}
+  else if(t.getAttribute('data-use')){S.skin=t.getAttribute('data-use');save();renderHome()}
+  else if(t.getAttribute('data-boost')){if(S.coins>=BOOST_PRICE){S.coins-=BOOST_PRICE;S.boosts++;save();renderHome()}}
+  else if(t.getAttribute('data-players')){S.players=+t.getAttribute('data-players');save();renderSetup()}
+  else if(t.id==='roomCreate'){enterRoom(genCode(),true)}
+  else if(t.id==='roomJoin'){enterRoom(ROOM_IN,false)}
+  else if(t.id==='roomStart'){hostStart(ROOM)}
+  else if(t.id==='roomLeave'){leaveRoom('')}
+  else if(t.id==='roomCopy'){copyCode(t)}
+  else if(t.getAttribute('data-dur')!==null){hostSetDur(+t.getAttribute('data-dur'))}
+});
+document.addEventListener('input',function(e){
+  var t=e.target;if(!t||!t.id)return;
+  if(t.id==='nick'){S.nick=String(t.value).slice(0,12);save()}
+  else if(t.id==='roomIn'){ROOM_IN=String(t.value).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);if(t.value!==ROOM_IN)t.value=ROOM_IN}
+});
+document.addEventListener('keydown',function(e){
+  if(e.target&&e.target.id==='roomIn'&&e.key==='Enter'){enterRoom(ROOM_IN,false)}
+});
+
+/* ---------- modal & soal ---------- */
+var modal=$('#modal'),sheet=$('#sheet');
+function openSheet(html){sheet.innerHTML=html;modal.hidden=false;sheet.scrollTop=0}
+function closeSheet(){modal.hidden=true;sheet.innerHTML=''}
+var qTimer=0;
+function timerHtml(time){return time?'<div class="timer"><i id="tbar"></i></div>':''}
+function startTimer(time,cb){
+  var bar=$('#tbar');if(!bar)return;
+  bar.style.transition='width '+time+'s linear';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.width='0%'})});
+  qTimer=setTimeout(cb,time*1000);
+}
+function feedback(ok,msg,o){
+  $('#qfoot').innerHTML='<div class="why '+(ok?'good':'bad')+'">'+msg+'</div><button class="btn primary block" id="qnext" style="margin-top:12px">Lanjut</button>';
+  $('#qnext').onclick=function(){closeSheet();o.onDone(ok)};
+  $('#qnext').focus();
+}
+function ask(o){
+  var it=o.item;
+  if(it&&it.type==='order'){askOrder(o,it);return}
+  var q=it?(it.opts?it:mcqFrom(it)):makeQ(),done=false,time=o.time||0;
+  var h='<span class="eyebrow">'+o.tag+'</span>'+timerHtml(time)+'<div class="q">'+q.q+'</div><div class="opts">';
+  q.opts.forEach(function(t,i){h+='<button class="opt" data-i="'+i+'">'+t+'</button>'});
+  h+='</div><div id="qfoot"></div>';
+  openSheet(h);
+  function finish(pick){
+    if(done)return;done=true;clearTimeout(qTimer);
+    var ok=pick===q.a,bs=sheet.querySelectorAll('.opt');
+    for(var i=0;i<bs.length;i++){bs[i].disabled=true;if(i===q.a)bs[i].className='opt right';else if(i===pick)bs[i].className='opt wrong'}
+    feedback(ok,(pick<0?'Waktu habis. ':(ok?'Benar! ':'Belum tepat. '))+(ok?'':'Jawaban yang benar: "'+q.opts[q.a]+'". ')+q.why+(ok&&o.win?' '+o.win:''),o);
+  }
+  var bs=sheet.querySelectorAll('.opt');
+  for(var i=0;i<bs.length;i++)(function(b){b.onclick=function(){finish(+b.getAttribute('data-i'))}})(bs[i]);
+  if(time)startTimer(time,function(){finish(-1)});
+}
+function askOrder(o,q){
+  var done=false,time=o.time||0,pool=shuffle(q.words.map(function(w,i){return {w:w,i:i}})),picked=[];
+  openSheet('<span class="eyebrow">'+o.tag+'</span>'+timerHtml(time)+'<div class="q">Susun kata-kata ini menjadi kalimat yang benar</div><div class="slots" id="slots"></div><div class="pool" id="pool"></div><div class="row"><button class="btn" id="oReset">Ulangi</button><button class="btn primary" id="oCheck" disabled>Periksa</button></div><div id="qfoot"></div>');
+  var slots=$('#slots'),poolEl=$('#pool'),chk=$('#oCheck');
+  function paint(){
+    var h='';
+    picked.forEach(function(p,k){h+='<button class="chipw on" data-k="'+k+'">'+p.w+'</button>'});
+    slots.innerHTML=h||'<span class="hintw">Ketuk kata di bawah. Urutannya dari kiri ke kanan.</span>';
+    h='';
+    pool.forEach(function(p){if(picked.indexOf(p)<0)h+='<button class="chipw" data-i="'+p.i+'">'+p.w+'</button>'});
+    poolEl.innerHTML=h;chk.disabled=picked.length<q.words.length;
+  }
+  slots.onclick=function(e){var b=e.target.closest('button');if(!b||done)return;picked.splice(+b.getAttribute('data-k'),1);paint()};
+  poolEl.onclick=function(e){var b=e.target.closest('button');if(!b||done)return;var i=+b.getAttribute('data-i');pool.forEach(function(p){if(p.i===i)picked.push(p)});paint()};
+  $('#oReset').onclick=function(){if(!done){picked=[];paint()}};
+  function end(timeout){
+    if(done)return;done=true;clearTimeout(qTimer);
+    var ans=picked.map(function(p){return p.w}).join(' ').toLowerCase().replace(/\s+/g,' ');
+    var ok=!timeout&&q.ok.indexOf(ans)>=0;
+    chk.disabled=true;$('#oReset').disabled=true;
+    feedback(ok,(timeout?'Waktu habis. ':(ok?'Benar! ':'Belum tepat. '))+'Kalimat yang benar: "'+q.show+'" '+q.why+(ok&&o.win?' '+o.win:''),o);
+  }
+  chk.onclick=function(){end(false)};
+  paint();
+  if(time)startTimer(time,function(){end(true)});
+}
+
+/* ---------- permainan ---------- */
+var cv=$('#cv'),ctx=cv.getContext('2d');
+var dpr=Math.min(2,window.devicePixelRatio||1);
+cv.width=W*dpr;cv.height=H*dpr;
+var G=null,raf=0,lastTs=0,hudAcc=0,syncAcc=0,endArm=0;
+var BOTS=[{n:'Bima',skin:'astro'},{n:'Sari',skin:'batik'},{n:'Joko',skin:'ojol'}];
+var LEVELS=[
+ {name:'Jakarta',tag:'Ibu kota yang tidak pernah tidur',sky:['#38b6ff','#ffd9a8'],sky2:'#9fe3ff',sil:'#f1f0ff',ground:'#57d98a',road:'#4f5a8f',edge:'#ffffff',mark:'rgba(255,255,255,.8)',bcol:['#ff6b9d','#ffb703','#2ec4b6','#8f7cff'],win:'rgba(255,255,255,.8)',lm:'monas',prop:'lamp',pc:'#ffe066',pole:'#6b74b8'},
+ {name:'Yogyakarta',tag:'Kota budaya, candi, dan batik',sky:['#ff8fb8','#ffe29a'],sky2:'#ffc6a8',sil:'#8a3f7a',ground:'#a6e35c',road:'#6f4f96',edge:'#ffe3b3',mark:'rgba(255,255,255,.8)',bcol:['#c77dff','#ff7a59','#ffd166','#06d6a0'],win:'rgba(255,255,255,.8)',lm:'candi',prop:'lamp',pc:'#ff9f45',pole:'#8a5aa0'},
+ {name:'Bali',tag:'Pulau dewata saat senja',sky:['#8a3ffc','#ffb347'],sky2:'#ff9a76',sil:'#52207a',ground:'#2ed6c0',road:'#5f3f86',edge:'#ffd166',mark:'rgba(255,255,255,.8)',bcol:['#ff5d8f','#ffd166','#4cc9f0','#b388ff'],win:'rgba(255,255,255,.8)',lm:'bali',sun:{x:CX-70,y:6,r:38,col:'rgba(255,214,102,.98)'},prop:'palm',pc:'#25d97d',pole:'#8a5a3a'},
+ {name:'Toraja',tag:'Negeri di atas awan',sky:['#3cc7f4','#d9f7ff'],sky2:'#bdeedd',sil:'#2fae7c',ground:'#7fdc9a',road:'#53728a',edge:'#ffffff',mark:'rgba(255,255,255,.85)',bcol:['#ef476f','#ffd166','#06d6a0','#118ab2'],win:'rgba(255,255,255,.8)',lm:'toraja',prop:'pine',pc:'#16a864',pole:'#7a4a2a'}
+];
+function theme(){return LEVELS[G.level%LEVELS.length]}
+var SKY=[];(function(){var x=-10;while(x<W){var w=18+Math.random()*30,h=18+Math.random()*52;SKY.push({x:x,w:w,h:h});x+=w+2}})();
+var BCOL=['#1b1f52','#232a63','#191c47','#2a2457'];
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function hash(n){var x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+
+function newRun(seed){
+  var rng=seed?mulberry32(seed):Math.random;
+  G={rng:rng,arrest:null,chaseL:0,polX:1,finishing:false,lastQW:-60,level:0,levelEndW:LEVEL_LEN,exitSpawned:false,chase:false,banner:{t:3.2,lv:0},t:0,dist:0,bonus:0,coins:0,lane:1,laneX:1,items:[],nextW:26,rowN:0,slowT:0,boostT:0,rocketT:0,inv:1.5,
+     strikes:0,strikeT:12,deaths:0,reviveTried:false,paused:false,over:false,shake:0,speed:13,phase:0,msgs:[],
+     recent:[],bots:(seed?[]:BOTS.slice(0,S.players-1)).map(function(b){return {n:b.n,skin:b.skin,score:0,rate:12+Math.random()*6,t:Math.random()*3}})};
+  while(G.nextW-G.dist<66)spawnRow();
+  buildRace();updateBoostBtn();hud(true);
+}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+var PASTEL=[['#fff4cc','#ffcf3f'],['#d9f5ff','#4cc9f0'],['#ffe0ec','#ff5d8f'],['#e5ffe0','#4ce08a'],['#efe3ff','#a47cff']];
+var QGAP=1700;
+function rshuffle(a,rng){for(var i=a.length-1;i>0;i--){var j=Math.floor(rng()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function pickPair(){
+  var p,k=0,rng=G.rng;do{p=PAIRS[Math.floor(rng()*PAIRS.length)];k++}while(G.recent.indexOf(p[0])>=0&&k<12);
+  G.recent.push(p[0]);if(G.recent.length>8)G.recent.shift();return p;
+}
+function spawnRow(){
+  var rng=G.rng;
+  if(!G.exitSpawned&&G.nextW>=G.levelEndW-8){
+    G.items.push({w:G.levelEndW,cells:[null,null,null],kind:'exit'});
+    G.exitSpawned=true;G.nextW=G.levelEndW+18;G.lastQW=G.levelEndW;return;
+  }
+  G.rowN++;
+  var lv=Math.floor(G.nextW/LEVEL_LEN),n=G.rowN,f=1+0.12*lv;
+  var it={w:G.nextW,cells:[null,null,null],kind:'row'},lanes=rshuffle([0,1,2],rng),r=rng(),allowQ=G.nextW-G.lastQW>=QGAP+250*lv;
+  if(n%8===0){
+    var p=pickPair(),isB=rng()<0.5,left=rng()<0.5;
+    it.kind='gate';it.word=isB?p[0]:p[1];it.bakuForm=p[0];
+    var lab=[left?'BAKU':'TIDAK BAKU',left?'TIDAK BAKU':'BAKU'];
+    it.cells[0]={t:'g',label:lab[0],ok:(lab[0]==='BAKU')===isB};
+    it.cells[1]={t:'p'};
+    it.cells[2]={t:'g',label:lab[1],ok:(lab[1]==='BAKU')===isB};
+    G.nextW+=30*f;
+  }else if(r<0.52){
+    var p2=pickPair();
+    it.cells[lanes[0]]={t:'w',text:p2[0],ok:true,baku:p2[0],ci:(n*3+lanes[0])%5};
+    it.cells[lanes[1]]={t:'w',text:p2[1],ok:false,baku:p2[0],ci:(n*3+lanes[1])%5};
+    if(rng()<Math.min(0.7,0.35+0.1*lv)){var p3=pickPair();it.cells[lanes[2]]={t:'w',text:p3[1],ok:false,baku:p3[0],ci:(n*3+lanes[2])%5}}
+    else if(rng()<0.5)it.cells[lanes[2]]={t:'c'};
+    G.nextW+=26*f;
+  }else if(allowQ&&r<0.66){
+    G.lastQW=G.nextW;it.cells[lanes[0]]={t:'q'};
+    if(rng()<0.6)it.cells[lanes[1]]={t:'c'};
+    G.nextW+=24*f;
+  }else if(allowQ&&r<0.72){
+    G.lastQW=G.nextW;it.cells[lanes[0]]={t:'r'};G.nextW+=24*f;
+  }else{
+    it.cells[lanes[0]]={t:'c'};if(rng()<0.6)it.cells[lanes[1]]={t:'c'};G.nextW+=19*f;
+  }
+  G.items.push(it);
+}
+function invuln(){return G.boostT>0||G.rocketT>0||G.inv>0}
+function addCoins(n){G.coins+=n;S.coins+=n;save()}
+function say(txt,x,y,col){G.msgs.push({txt:txt,x:x,y:y,life:1,col:col||'#fff'})}
+var toastT=0;
+function toast(txt,kind){var t=$('#toast');t.textContent=txt;t.className='toast show '+(kind||'');clearTimeout(toastT);toastT=setTimeout(function(){t.className='toast'},kind==='bad'?6000:2200)}
+function clearChase(){if(G.strikes<3)G.strikes=G.chase?2:0}
+function strike(msg){
+  G.strikes++;G.slowT=3;G.shake=0.4;
+  say('PRIIT!',CX+(G.laneX-1)*LW,PY-130,'#ff6074');
+  if(G.strikes>=3)die('Tiga kesalahan berturut-turut. Polisi berhasil menangkapmu.');
+  else toast(msg+(G.strikes===1?' Polisi mulai mengejarmu!':' Polisi makin dekat. Satu kesalahan lagi, kamu ditangkap.'),'bad');
+}
+function passRow(it){
+  if(it.kind==='exit'){exitGate();return}
+  var l=clamp(Math.round(G.laneX),0,2),c=it.cells[l];
+  if(!c||c.taken)return;
+  c.taken=true;
+  var px=CX+(l-1)*LW;
+  if(c.t==='w'){
+    if(c.ok){addCoins(3);G.bonus+=10;say('+3',px,PY-90,'#ffcf3f');toast('Benar! "'+c.text+'" baku.','good');clearChase()}
+    else if(invuln()){toast('"'+c.text+'" tidak baku. Bakunya "'+c.baku+'".','bad')}
+    else strike('Salah! "'+c.text+'" tidak baku, yang baku "'+c.baku+'".');
+  }else if(c.t==='c'){addCoins(1);say('+1',px,PY-90,'#ffcf3f')}
+  else if(c.t==='q'){
+    G.paused=true;
+    ask({tag:'Kotak soal',time:12,win:'Kamu dapat 1 kunci.',onDone:function(ok){
+      if(ok){S.keys++;save();toast('+1 kunci','good');clearChase()}else strike('Jawaban salah, belum dapat kunci.');
+      G.paused=false;hud(true);
+    }});
+  }else if(c.t==='r'){
+    G.paused=true;
+    ask({tag:'Roket',time:12,win:'Roket menyala, lari 2x lebih cepat.',onDone:function(ok){
+      if(ok){G.rocketT=6;toast('Roket! Kecepatan 2x','good');clearChase()}else strike('Jawaban salah, roketnya padam.');
+      G.paused=false;
+    }});
+  }else if(c.t==='g'){
+    if(c.ok){addCoins(5);G.bonus+=25;say('+5',px,PY-90,'#ffcf3f');toast('Lorong lolos!','good');clearChase()}
+    else if(invuln()){toast('Salah lorong. Yang benar: "'+it.bakuForm+'" baku.','bad')}
+    else strike('Salah lorong. Yang baku adalah "'+it.bakuForm+'", bukan "'+it.word+'".');
+  }else if(c.t==='p'){
+    if(!invuln())die('Menabrak penghalang di tengah lorong. Polisi menangkapmu.');
+  }
+}
+function exitGate(){
+  var cur=LEVELS[G.level%LEVELS.length],nxt=LEVELS[(G.level+1)%LEVELS.length];
+  G.paused=true;
+  ask({tag:'Lorong soal · '+cur.name+' ke '+nxt.name,time:40,item:levelQ(G.level),win:'Jalan ke '+nxt.name+' terbuka.',onDone:function(ok){nextLevel(ok)}});
+}
+function nextLevel(ok){
+  G.level++;G.exitSpawned=false;G.levelEndW+=LEVEL_LEN;G.chase=!ok;
+  G.strikes=ok?0:2;G.strikeT=12;G.slowT=0;G.banner={t:3.2,lv:G.level};
+  var nm=theme().name;
+  if(ok){G.bonus+=50;addCoins(10);toast('Benar! +10 koin. Selamat datang di '+nm+'.','good')}
+  else toast('Salah! Polisi mengejarmu sepanjang peta '+nm+'. Satu kesalahan lagi, kamu tertangkap.','bad');
+  G.paused=false;hud(true);
+}
+function die(reason){
+  if(G.over)return;
+  G.over=true;G.deaths++;G.reviveTried=false;G.shake=0.6;
+  G.arrest={t:0,reason:reason,shown:false};
+}
+function arrestStep(dt){
+  var A=G.arrest;
+  A.t+=dt;G.shake=Math.max(0,G.shake-dt);
+  G.msgs.forEach(function(m){m.life-=dt*1.2;m.y-=dt*40});
+  G.msgs=G.msgs.filter(function(m){return m.life>0});
+  if(!A.shown&&!G.finishing&&A.t>=1.7){A.shown=true;showOver(A.reason)}
+}
+function score(){return Math.floor(G.dist*1.2)+G.bonus}
+function ranking(){
+  var all=[{id:'me',n:'Kamu',skin:S.skin,score:score(),me:true}];
+  if(ROOM&&(ROOM.state==='main'||ROOM.state==='hasil')){
+    rivals().forEach(function(r){all.push({id:r.id,n:r.n,skin:r.skin,score:r.score,live:r.live})});
+  }else G.bots.forEach(function(b,i){all.push({id:'b'+i,n:b.n,skin:b.skin,score:Math.floor(b.score)})});
+  all.sort(function(a,b){return b.score-a.score});
+  return all;
+}
+function showOver(reason){
+  var cost=G.deaths,rk=ranking(),pos=0;
+  rk.forEach(function(r,i){if(r.me)pos=i+1});
+  var h='<span class="eyebrow">'+(rk.length>1?'Peringkat '+pos+' dari '+rk.length:'Main solo')+'</span><h2>Kamu ditangkap polisi!</h2><p style="color:var(--muted)">'+reason+'</p>'+
+   '<div class="row"><span class="chip">'+score()+' <small>skor</small></span><span class="chip">'+COIN+G.coins+' <small>koin run ini</small></span><span class="chip">'+KEY+S.keys+' <small>kunci</small></span></div>'+
+   '<button class="btn primary block" id="bCont"'+(S.keys<cost?' disabled':'')+'>Lanjut lari &middot; '+cost+' '+KEY+'</button>'+
+   '<button class="btn block" id="bRev"'+(G.reviveTried?' disabled':'')+'>'+(G.reviveTried?'Sudah dicoba untuk kekalahan ini':'Hidupkan lewat 1 soal (gratis)')+'</button>'+
+   '<button class="btn block" id="bKey">Cari kunci: jawab soal</button>'+
+   '<button class="btn block ghost" id="bEnd">Selesai</button>';
+  openSheet(h);
+  $('#bCont').onclick=function(){if(S.keys>=cost){S.keys-=cost;save();revive()}};
+  $('#bRev').onclick=function(){
+    G.reviveTried=true;
+    ask({tag:'Hidupkan lagi',time:15,win:'Kamu hidup lagi.',onDone:function(ok){if(ok)revive();else showOver(reason)}});
+  };
+  $('#bKey').onclick=function(){
+    ask({tag:'Cari kunci',time:0,win:'Kunci bertambah 1.',onDone:function(ok){if(ok){S.keys++;save()}showOver(reason)}});
+  };
+  $('#bEnd').onclick=finish;
+}
+function revive(){
+  closeSheet();
+  G.over=false;G.arrest=null;G.paused=false;G.strikes=G.chase?2:0;G.chaseL=G.strikes;G.slowT=0;G.inv=2.5;
+  G.items=G.items.filter(function(it){return it.kind==='exit'||it.w-G.dist>14});
+  while(G.nextW-G.dist<66)spawnRow();
+  toast('Lanjut! Kebal selama 2,5 detik.','good');hud(true);updateBoostBtn();
+}
+function finish(){
+  if(ROOM&&ROOM.state==='main'){roomFinish(false);return}
+  var rk=ranking(),sc=score();
+  if(sc>S.best)S.best=sc;save();
+  var h='<span class="eyebrow">Lomba selesai</span><h2>'+(rk.length>1?'Podium':'Skor '+sc)+'</h2>';
+  if(rk.length>1)h+=podiumHtml(rk);
+  else h+='<div class="ranklist"><div class="r me"><b>1</b><b>Kamu</b><span>'+sc+'</span></div></div>';
+  h+='<p style="color:var(--muted)">Koin dari lari ini: '+G.coins+'. Total koin kamu: '+S.coins+'.</p>'+
+     '<button class="btn primary block" id="bAgain">Main lagi</button><button class="btn block ghost" id="bHome">Ke menu</button>';
+  openSheet(h);paintPodium();
+  $('#bAgain').onclick=function(){closeSheet();startRun()};
+  $('#bHome').onclick=function(){closeSheet();goHome()};
+}
+
+/* ---------- pembaruan ---------- */
+function update(dt){
+  if(G.arrest){arrestStep(dt);return}
+  if(G.paused||G.over||G.finishing)return;
+  G.t+=dt;
+  G.slowT=Math.max(0,G.slowT-dt);G.boostT=Math.max(0,G.boostT-dt);G.rocketT=Math.max(0,G.rocketT-dt);G.inv=Math.max(0,G.inv-dt);
+  G.shake=Math.max(0,G.shake-dt);
+  var base=13+21*(1-Math.exp(-G.t/220)),mult=(G.boostT>0||G.rocketT>0)?2:(G.slowT>0?0.55:1);
+  G.speed+=(base*mult-G.speed)*Math.min(1,dt*6);
+  var v=G.speed*dt;G.dist+=v;G.phase+=dt*(4.5+0.28*G.speed);
+  G.laneX+=(G.lane-G.laneX)*Math.min(1,dt*14);
+  G.polX+=(G.laneX-G.polX)*Math.min(1,dt*5);
+  G.chaseL+=(G.strikes-G.chaseL)*Math.min(1,dt*3);
+  while(G.nextW-G.dist<66)spawnRow();
+  for(var i=0;i<G.items.length;i++){
+    var it=G.items[i],d=it.w-G.dist;
+    if(!it.checked&&d<=0.6){it.checked=true;passRow(it);if(G.over||G.paused)break}
+  }
+  G.items=G.items.filter(function(it){return it.w-G.dist>-2.4});
+    if(G.banner)G.banner.t-=dt;
+  G.bots.forEach(function(b){
+    b.t-=dt;if(b.t<=0){b.rate=9+Math.random()*12;b.t=3+Math.random()*3}
+    b.score+=b.rate*dt*(1+G.t/120);
+    if(Math.random()<dt*0.12)b.score=Math.max(0,b.score-18);
+  });
+  G.msgs.forEach(function(m){m.life-=dt*1.2;m.y-=dt*40});
+  G.msgs=G.msgs.filter(function(m){return m.life>0});
+}
+
+/* ---------- menggambar ---------- */
+function P(d){var s=1/(1+Math.max(d,-1.5)/16);return {s:s,y:HZ+(PY-HZ)*s}}
+function spire(x,sc,col){
+  ctx.fillStyle=col;
+  for(var t=0;t<5;t++){var w=(44-t*7)*sc;ctx.fillRect(x-w/2,HZ-(t+1)*12*sc,w,12*sc)}
+  ctx.beginPath();ctx.moveTo(x-6*sc,HZ-60*sc);ctx.lineTo(x,HZ-88*sc);ctx.lineTo(x+6*sc,HZ-60*sc);ctx.fill();
+}
+function roof(x,sc,col){
+  ctx.fillStyle=col;ctx.fillRect(x-18*sc,HZ-22*sc,36*sc,22*sc);
+  ctx.beginPath();ctx.moveTo(x-38*sc,HZ-44*sc);ctx.quadraticCurveTo(x,HZ-10*sc,x+38*sc,HZ-44*sc);ctx.lineTo(x+28*sc,HZ-30*sc);ctx.quadraticCurveTo(x,HZ-16*sc,x-28*sc,HZ-30*sc);ctx.closePath();ctx.fill();
+}
+function drawLandmark(T){
+  var c=ctx;c.fillStyle=T.sil;
+  if(T.lm==='monas'){
+    var x=CX+70;c.fillRect(x-34,HZ-10,68,10);
+    c.beginPath();c.moveTo(x-14,HZ-10);c.lineTo(x-7,HZ-40);c.lineTo(x+7,HZ-40);c.lineTo(x+14,HZ-10);c.fill();
+    c.fillRect(x-3,HZ-104,6,66);
+    c.fillStyle='#ffcf3f';c.beginPath();c.ellipse(x,HZ-112,5,9,0,0,6.283);c.fill();
+  }else if(T.lm==='candi'){
+    spire(CX-88,0.7,T.sil);spire(CX-46,0.7,T.sil);spire(CX-67,1,T.sil);
+  }else if(T.lm==='bali'){
+    var bx=CX+70;
+    for(var sd=-1;sd<=1;sd+=2)for(var t=0;t<6;t++){
+      var w=24-t*3.5,x0=sd<0?bx-8-w:bx+8;c.fillRect(x0,HZ-(t+1)*11,w,11);
+    }
+  }else if(T.lm==='toraja'){
+    c.beginPath();c.moveTo(0,HZ);c.lineTo(50,HZ-46);c.lineTo(110,HZ-12);c.lineTo(170,HZ-60);c.lineTo(250,HZ-8);c.lineTo(310,HZ-40);c.lineTo(W,HZ);c.fill();
+    roof(CX-70,0.9,'#c2452d');roof(CX+80,0.7,'#c2452d');
+  }
+}
+function drawLamp(x,y,s,T){
+  ctx.strokeStyle=T.pole;ctx.lineWidth=Math.max(1,3*s);
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-92*s);ctx.stroke();
+  ctx.fillStyle=T.pc;ctx.beginPath();ctx.arc(x,y-94*s,Math.max(1.2,5*s),0,6.283);ctx.fill();
+}
+function drawPalm(x,y,s,T,sd){
+  var tx=x+sd*6*s,ty=y-80*s;
+  ctx.strokeStyle=T.pole;ctx.lineWidth=Math.max(1,4*s);
+  ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+sd*8*s,y-40*s,tx,ty);ctx.stroke();
+  ctx.strokeStyle=T.pc;ctx.lineWidth=Math.max(1,4*s);
+  for(var a=-0.9;a<=0.91;a+=0.45){
+    ctx.beginPath();ctx.moveTo(tx,ty);ctx.quadraticCurveTo(tx+Math.sin(a)*20*s,ty-16*s,tx+Math.sin(a)*38*s,ty+8*s);ctx.stroke();
+  }
+}
+function drawPine(x,y,s,T){
+  ctx.fillStyle=T.pole;ctx.fillRect(x-2*s,y-18*s,4*s,18*s);
+  ctx.fillStyle=T.pc;
+  for(var t=0;t<3;t++){
+    var w=(34-t*8)*s,yb=y-16*s-t*22*s;
+    ctx.beginPath();ctx.moveTo(x,yb-30*s);ctx.lineTo(x-w/2,yb);ctx.lineTo(x+w/2,yb);ctx.closePath();ctx.fill();
+  }
+}
+function drawWorld(){
+  var T=theme();
+  var g=ctx.createLinearGradient(0,0,0,HZ);g.addColorStop(0,T.sky[0]);g.addColorStop(1,T.sky[1]);
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,HZ+2);
+  if(T.sun){ctx.fillStyle=T.sun.col;ctx.beginPath();ctx.arc(T.sun.x,HZ-T.sun.y,T.sun.r,0,6.283);ctx.fill()}
+  ctx.fillStyle='rgba(255,255,255,.8)';
+  for(var ci=0;ci<4;ci++){
+    var cx=((ci*110+G.t*(6+ci*2))%(W+80))-40,cy=24+ci*20;
+    ctx.beginPath();ctx.ellipse(cx,cy,26,9,0,0,6.283);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx+16,cy-5,16,9,0,0,6.283);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx-14,cy-3,14,7,0,0,6.283);ctx.fill();
+  }
+  drawLandmark(T);
+  ctx.fillStyle=T.sky2;
+  SKY.forEach(function(b){ctx.fillRect(b.x,HZ-b.h*0.6,b.w,b.h*0.6)});
+  ctx.fillStyle=T.ground;ctx.fillRect(0,HZ,W,H-HZ);
+  (function(){var k0=Math.floor(G.dist/7);for(var j=0;j<14;j++){var wp=(k0+j)*7;if((k0+j)%2)continue;var y1=P(Math.max(wp-G.dist,-1)).y,y2=P(wp+7-G.dist).y;if(y2>y1){ctx.fillStyle='rgba(0,0,0,.07)';ctx.fillRect(0,y1,W,y2-y1)}}})();
+  var bw=1.5*LW*((H-HZ)/(PY-HZ));
+  ctx.fillStyle=T.road;ctx.beginPath();ctx.moveTo(CX-3,HZ);ctx.lineTo(CX+3,HZ);ctx.lineTo(CX+bw,H);ctx.lineTo(CX-bw,H);ctx.closePath();ctx.fill();
+  var rg=ctx.createLinearGradient(0,HZ,0,H);rg.addColorStop(0,'rgba(255,255,255,.22)');rg.addColorStop(0.5,'rgba(255,255,255,0)');rg.addColorStop(1,'rgba(0,0,0,.22)');
+  ctx.fillStyle=rg;ctx.fill();
+  var sH=(H-HZ)/(PY-HZ),tints=['rgba(255,214,102,.18)','rgba(255,255,255,.08)','rgba(76,201,240,.18)'];
+  for(var li=0;li<3;li++){
+    var xa=(li-1.5)*LW*sH,xb=(li-0.5)*LW*sH;
+    ctx.fillStyle=tints[li];ctx.beginPath();ctx.moveTo(CX,HZ);ctx.lineTo(CX+xa,H);ctx.lineTo(CX+xb,H);ctx.closePath();ctx.fill();
+  }
+  ctx.strokeStyle=T.edge;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(CX-3,HZ);ctx.lineTo(CX-bw,H);ctx.moveTo(CX+3,HZ);ctx.lineTo(CX+bw,H);ctx.stroke();
+  ctx.strokeStyle=T.mark;
+  var off=G.dist%8;
+  for(var d0=-8-off;d0<72;d0+=8){
+    var a=Math.max(d0,-1),b=d0+4;if(b<-1)continue;
+    var pa=P(a),pb=P(b);
+    for(var side=-1;side<=1;side+=2){
+      ctx.lineWidth=Math.max(1,3.2*(pa.s+pb.s)/2);
+      ctx.beginPath();ctx.moveTo(CX+side*0.5*LW*pa.s,pa.y);ctx.lineTo(CX+side*0.5*LW*pb.s,pb.y);ctx.stroke();
+    }
+  }
+  var fg=ctx.createLinearGradient(0,HZ-34,0,HZ+60);fg.addColorStop(0,'rgba(255,255,255,0)');fg.addColorStop(0.45,'rgba(255,255,255,.34)');fg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=fg;ctx.fillRect(0,HZ-34,W,94);
+  var base=Math.floor(G.dist/18);
+  for(var j=5;j>=0;j--){
+    var wpos=(base+j)*18,d=wpos-G.dist;if(d<-2)continue;
+    var pp=P(d),idx=base+j;
+    for(var sd=-1;sd<=1;sd+=2){
+      var h=(70+hash(idx*2+sd)*90)*pp.s,w=(70+hash(idx+sd*7)*30)*pp.s,x=CX+sd*(2.1*LW*pp.s)+sd*w/2;
+      ctx.fillStyle=T.bcol[Math.floor(hash(idx*3+sd)*4)];ctx.fillRect(x-w/2,pp.y-h,w,h);
+      ctx.fillStyle='rgba(0,0,0,.2)';ctx.fillRect(sd>0?x+w/2-w*0.22:x-w/2,pp.y-h,w*0.22,h);
+      ctx.fillStyle='rgba(255,255,255,.3)';ctx.fillRect(x-w/2,pp.y-h,w,Math.max(1,h*0.04));
+      ctx.fillStyle=T.win;
+      for(var wy=0;wy<3;wy++)for(var wx=0;wx<2;wx++)if(hash(idx*11+wy*3+wx+sd)>0.4)ctx.fillRect(x-w/2+w*(0.18+wx*0.45),pp.y-h+h*(0.12+wy*0.28),w*0.22,h*0.12);
+    }
+  }
+  var lb=Math.floor(G.dist/12);
+  for(var k=7;k>=0;k--){
+    var d2=(lb+k)*12-G.dist;if(d2<-2)continue;
+    var q=P(d2);
+    for(var sd2=-1;sd2<=1;sd2+=2){
+      var lx=CX+sd2*1.62*LW*q.s;
+      if(T.prop==='palm')drawPalm(lx,q.y,q.s,T,sd2);
+      else if(T.prop==='pine')drawPine(lx,q.y,q.s,T);
+      else drawLamp(lx,q.y,q.s,T);
+    }
+  }
+}
+function plate(x,y,w,h,text,fill,ink,bd){
+  rr(ctx,x-w/2,y-h/2,w,h,Math.max(3,10*(h/40)));ctx.fillStyle=fill;ctx.fill();
+  ctx.lineWidth=Math.max(1,2.5*(h/40));ctx.strokeStyle=bd;ctx.stroke();
+  var fs=Math.max(7,16*(h/40));ctx.font='800 '+fs+'px "Nunito Sans",sans-serif';
+  while(ctx.measureText(text).width>w*0.9&&fs>6){fs-=0.5;ctx.font='800 '+fs+'px "Nunito Sans",sans-serif'}
+  ctx.fillStyle=ink;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y+h*0.03);
+}
+function drawCell(c,x,yb,s){
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x,yb,26*s,7*s,0,0,6.283);ctx.fill();
+  if(c.t==='w'){var pc2=PASTEL[(c.ci||0)%PASTEL.length];plate(x,yb-34*s,LW*s*0.9,40*s,c.text,pc2[0],'#1b1740',pc2[1])}
+  else if(c.t==='c'){ctx.fillStyle='#ffcf3f';ctx.strokeStyle='#c98f00';ctx.lineWidth=Math.max(1,2.5*s);ctx.beginPath();ctx.arc(x,yb-22*s,11*s,0,6.283);ctx.fill();ctx.stroke();ctx.fillStyle='#c98f00';ctx.fillRect(x-4*s,yb-23*s,8*s,2.4*s)}
+  else if(c.t==='q'){rr(ctx,x-20*s,yb-58*s,40*s,40*s,9*s);ctx.fillStyle='#7b5cff';ctx.fill();ctx.lineWidth=Math.max(1,3*s);ctx.strokeStyle='#c9bcff';ctx.stroke();ctx.fillStyle='#fff';ctx.font='800 '+Math.max(8,26*s)+'px "Bricolage Grotesque",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('?',x,yb-38*s)}
+  else if(c.t==='r'){
+    ctx.save();ctx.translate(x,yb-34*s);ctx.scale(s,s);
+    ctx.fillStyle='#ff9a3d';ctx.beginPath();ctx.moveTo(-6,16);ctx.lineTo(0,34);ctx.lineTo(6,16);ctx.fill();
+    ctx.fillStyle='#f4f6ff';ctx.beginPath();ctx.ellipse(0,0,11,22,0,0,6.283);ctx.fill();
+    ctx.fillStyle='#ff4b5c';ctx.beginPath();ctx.moveTo(-9,-10);ctx.quadraticCurveTo(0,-34,9,-10);ctx.fill();
+    ctx.fillStyle='#79b4ff';ctx.beginPath();ctx.arc(0,2,5,0,6.283);ctx.fill();
+    ctx.fillStyle='#ff4b5c';ctx.fillRect(-17,8,7,14);ctx.fillRect(10,8,7,14);
+    ctx.restore();
+  }
+}
+function drawGate(it,s,yb){
+  var half=1.5*LW*s,top=yb-130*s;
+  ctx.fillStyle='rgba(10,13,39,.45)';ctx.fillRect(CX-half,top,half*2,130*s);
+  ctx.fillStyle='#4a5497';ctx.fillRect(CX-half-5*s,top,6*s,130*s);ctx.fillRect(CX+half-1*s,top,6*s,130*s);ctx.fillRect(CX-half-5*s,top-8*s,half*2+10*s,12*s);
+  for(var l=0;l<3;l+=2){
+    var c=it.cells[l],x=CX+(l-1)*LW*s;
+    if(!c.taken)plate(x,yb-92*s,LW*s*0.9,32*s,c.label,c.label==='BAKU'?'#1f7a5a':'#a63a48','#ffffff','#ffffff');
+  }
+  var pc=it.cells[1];
+  if(pc&&!pc.taken){var px=CX,pw=LW*s*0.6,ph=62*s;ctx.fillStyle='#ffcf3f';ctx.fillRect(px-pw/2,yb-ph,pw,ph);ctx.fillStyle='#1c1740';for(var z=0;z<4;z++)ctx.fillRect(px-pw/2,yb-ph+z*ph/4+ph/8,pw,ph/8)}
+  plate(CX,top-28*s,half*1.5,44*s,it.word,'#101440','#ffffff','#ffcf3f');
+  ctx.fillStyle='#ffcf3f';ctx.font='800 '+Math.max(6,11*s)+'px "Nunito Sans",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('LORONG KATA',CX,top-58*s);
+}
+function drawExit(s,yb){
+  var T=theme(),nx=LEVELS[(G.level+1)%LEVELS.length],half=1.62*LW*s,hgt=170*s,top=yb-hgt;
+  var gr=ctx.createLinearGradient(0,top,0,yb);gr.addColorStop(0,'rgba(5,6,20,.97)');gr.addColorStop(1,'rgba(22,24,64,.92)');
+  rr(ctx,CX-half,top,half*2,hgt+30*s,Math.max(4,46*s));ctx.fillStyle=gr;ctx.fill();
+  ctx.lineWidth=Math.max(2,7*s);ctx.strokeStyle=T.edge;ctx.stroke();
+  rr(ctx,CX-half+12*s,top+12*s,half*2-24*s,hgt,Math.max(3,36*s));ctx.lineWidth=Math.max(1,3*s);ctx.strokeStyle='rgba(255,207,63,.85)';ctx.stroke();
+  plate(CX,top-26*s,half*1.5,40*s,'LORONG SOAL','#ffcf3f','#1c1740','#ffffff');
+  ctx.fillStyle='#ffffff';ctx.font='800 '+Math.max(6,15*s)+'px "Nunito Sans",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('Menuju '+nx.name,CX,top+hgt*0.42);
+  ctx.fillStyle='#a3abdc';ctx.font='600 '+Math.max(5,11*s)+'px "Nunito Sans",sans-serif';
+  ctx.fillText('Jawab dengan benar',CX,top+hgt*0.42+22*s);
+}
+function drawBanner(){
+  if(!G.banner||G.banner.t<=0)return;
+  var T=LEVELS[G.banner.lv%LEVELS.length];
+  ctx.globalAlpha=Math.min(1,G.banner.t);
+  ctx.fillStyle='rgba(8,10,34,.84)';ctx.fillRect(0,168,W,100);
+  ctx.fillStyle=T.edge;ctx.fillRect(0,168,W,3);ctx.fillRect(0,265,W,3);
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#ffcf3f';ctx.font='800 13px "Nunito Sans",sans-serif';ctx.fillText('LEVEL '+(G.banner.lv+1),CX,190);
+  ctx.fillStyle='#ffffff';ctx.font='800 36px "Bricolage Grotesque",sans-serif';ctx.fillText(T.name,CX,222);
+  ctx.fillStyle='#a3abdc';ctx.font='600 14px "Nunito Sans",sans-serif';ctx.fillText(T.tag,CX,252);
+  ctx.globalAlpha=1;
+}
+function drawItem(it){
+  var d=it.w-G.dist;if(d>70||d<-2.2)return;
+  var p=P(d),s=p.s,a=1;
+  if(d>50)a=(70-d)/20;if(d<0)a=Math.max(0,1+d/2.2);
+  ctx.globalAlpha=Math.max(0,Math.min(1,a));
+  if(it.kind==='gate')drawGate(it,s,p.y);
+  else if(it.kind==='exit')drawExit(s,p.y);
+  else for(var l=0;l<3;l++){var c=it.cells[l];if(c&&!c.taken)drawCell(c,CX+(l-1)*LW*s,p.y,s)}
+  ctx.globalAlpha=1;
+}
+function ease(t){return t<0?0:(t>1?1:1-Math.pow(1-t,3))}
+function drawChasers(){
+  if(G.arrest){drawArrest();return}
+  var cl=G.chaseL;
+  if(cl<0.05)return;
+  var x=CX+(G.polX-1)*LW,ph=G.phase*0.9+1.3,a=Math.min(cl,1),b=Math.max(0,Math.min(cl-1,1));
+  drawChar(ctx,x-34*b,700-(700-(PY+74))*a-34*b,1.1,'polisi',ph);
+  if(b>0.02)drawChar(ctx,x+34,720-(720-(PY+86))*b,1.1,'polisi',ph+2.1);
+  if(cl>0.4){
+    var f=Math.floor(G.t*6)%2;
+    ctx.fillStyle=f?'rgba(255,59,77,.55)':'rgba(77,107,255,.55)';ctx.fillRect(0,H-6,W/2,6);
+    ctx.fillStyle=f?'rgba(77,107,255,.55)':'rgba(255,59,77,.55)';ctx.fillRect(W/2,H-6,W/2,6);
+  }
+}
+function drawArrest(){
+  var A=G.arrest,e=ease(A.t/0.7),x=CX+(G.laneX-1)*LW,ph=e<1?A.t*10:0.9,f=Math.floor(A.t*6)%2;
+  drawChar(ctx,x-46*e-4,720-(720-(PY+8))*e,1.1,'polisi',ph);
+  drawChar(ctx,x+46*e+4,720-(720-(PY+4))*e,1.1,'polisi',ph+2);
+  if(A.t>0.5){
+    var w=240,y=232;
+    rr(ctx,CX-w/2,y-26,w,52,12);ctx.fillStyle=f?'#e63946':'#2f5fd0';ctx.fill();
+    ctx.lineWidth=3;ctx.strokeStyle='#ffffff';ctx.stroke();
+    ctx.fillStyle='#ffffff';ctx.font='800 28px "Bricolage Grotesque",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('DITANGKAP!',CX,y+1);
+  }
+  ctx.fillStyle=f?'rgba(255,60,80,.16)':'rgba(70,100,255,.16)';ctx.fillRect(0,0,W,H);
+}
+function drawPlayer(){
+  var x=CX+(G.laneX-1)*LW,bob=Math.abs(Math.sin(G.phase))*3;
+  if(G.over){ctx.save();ctx.globalAlpha=0.7}
+  if(G.inv>0&&!G.over&&Math.floor(G.t*10)%2===0){ctx.globalAlpha=0.45}
+  if(G.boostT>0||G.rocketT>0){
+    ctx.fillStyle='rgba(255,207,63,.2)';ctx.beginPath();ctx.arc(x,PY-44,52,0,6.283);ctx.fill();
+    ctx.strokeStyle='rgba(255,226,140,.5)';ctx.lineWidth=2;
+    for(var i=0;i<7;i++){var lx=CX+(Math.random()-.5)*300,ly=140+Math.random()*320;ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx,ly+40+Math.random()*30);ctx.stroke()}
+    if(G.rocketT>0){ctx.fillStyle='#ff9a3d';ctx.beginPath();ctx.moveTo(x-8,PY-22);ctx.lineTo(x,PY+18+Math.random()*10);ctx.lineTo(x+8,PY-22);ctx.fill()}
+  }
+  drawChar(ctx,x,PY,1,S.skin,G.arrest?0.9:G.phase,G.arrest?0:clamp((G.lane-G.laneX)*0.22,-0.3,0.3));
+  ctx.globalAlpha=1;if(G.over)ctx.restore();
+}
+function drawMsgs(){
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  G.msgs.forEach(function(m){ctx.globalAlpha=Math.max(0,m.life);ctx.fillStyle=m.col;ctx.font='800 22px "Bricolage Grotesque",sans-serif';ctx.fillText(m.txt,m.x,m.y)});
+  ctx.globalAlpha=1;
+}
+function draw(){
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.save();
+  if(G.shake>0)ctx.translate((Math.random()-.5)*G.shake*16,(Math.random()-.5)*G.shake*12);
+  drawWorld();
+  var arr=G.items.slice().sort(function(a,b){return b.w-a.w});
+  for(var i=0;i<arr.length;i++)drawItem(arr[i]);
+  drawRivals();if(G.arrest){drawPlayer();drawChasers()}else{drawChasers();drawPlayer()}drawMsgs();drawBanner();
+  if(G.strikes>=2&&!G.arrest){ctx.fillStyle=Math.floor(G.t*6)%2?'rgba(255,60,80,.10)':'rgba(70,100,255,.10)';ctx.fillRect(0,0,W,H)}
+  if(!G.arrest&&G.speed>22){ctx.strokeStyle='rgba(255,255,255,'+Math.min(.35,(G.speed-22)/40)+')';ctx.lineWidth=1.5;for(var si=0;si<10;si++){var sx=(si%2?W-12-Math.random()*40:12+Math.random()*40),sy=HZ+30+Math.random()*(H-HZ-60);ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx+(sx<CX?-3:3),sy+30+Math.random()*30);ctx.stroke()}}
+  var vg=ctx.createRadialGradient(CX,H*0.5,H*0.35,CX,H*0.5,H*0.78);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(10,6,40,.38)');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  ctx.restore();
+}
+
+/* ---------- room: main bersama ---------- */
+var ROOM=null,ROOMCAP=null,ROOMREADY=false,ROOM_MSG='',ROOM_IN='';
+var CODE_CHARS='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+function esc(x){return String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function num(v){v=+v;return isFinite(v)?v:0}
+function cleanName(x){return String(x==null?'':x).replace(/[\u0000-\u001f\u007f-\u009f]/g,'').trim().slice(0,12)||'Pemain'}
+function nickName(){return cleanName(S.nick)}
+function genCode(){var c='';for(var i=0;i<5;i++)c+=CODE_CHARS.charAt(Math.floor(Math.random()*CODE_CHARS.length));return c}
+
+/* ---------- room tanpa server sendiri (WebRTC lewat PeerJS) ---------- */
+var PEERJS_URL='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
+function loadPeerJS(){
+  return new Promise(function(res,rej){
+    if(window.Peer)return res();
+    var sc=document.createElement('script');sc.src=PEERJS_URL;sc.async=true;
+    sc.onload=function(){window.Peer?res():rej(new Error('nopeer'))};sc.onerror=function(){rej(new Error('load'))};
+    document.head.appendChild(sc);
+  });
+}
+function makePeerRoomCap(){
+  return {join:function(name){
+    return loadPeerJS().then(function(){return new Promise(function(resolve,reject){
+      var hubId='bakusurfers-'+String(name).replace(/[^a-z0-9-]/g,''),peer=null,me=null,mine={},peersMap={},ls=[],errs=[],conns={},hubConn=null,isHub=false,closed=false,done=false,timer=0,guard=0;
+      function snapshot(){var o={};Object.keys(peersMap).forEach(function(k){o[k]=peersMap[k]});if(me&&!o[me])o[me]=mine;return o}
+      function arr(){var o=snapshot();return Object.keys(o).map(function(id){return {peer:id,kind:'viewer',presence:o[id],isMe:id===me,sameTab:id===me}})}
+      function notify(){ls.slice().forEach(function(f){try{f()}catch(e){}})}
+      function failAll(){if(closed)return;errs.slice().forEach(function(f){try{f()}catch(e){}})}
+      function broadcast(){
+        if(timer)return;
+        timer=setTimeout(function(){
+          timer=0;if(closed)return;
+          var msg={t:'s',p:snapshot()};
+          Object.keys(conns).forEach(function(id){try{conns[id].send(msg)}catch(e){}});
+          notify();
+        },50);
+      }
+      var api={
+        peers:arr,
+        presence:function(o){for(var k in o)if(Object.prototype.hasOwnProperty.call(o,k))mine[k]=o[k];
+          if(isHub){peersMap[me]=mine;broadcast()}else if(hubConn&&hubConn.open){try{hubConn.send({t:'p',p:mine})}catch(e){}}
+          return Promise.resolve()},
+        onPeers:function(cb,eb){ls.push(cb);if(eb)errs.push(eb);return function(){var i=ls.indexOf(cb);if(i>=0)ls.splice(i,1);i=errs.indexOf(eb);if(i>=0)errs.splice(i,1)}},
+        leave:function(){closed=true;clearTimeout(timer);clearTimeout(guard);try{peer&&peer.destroy()}catch(e){}return Promise.resolve()}
+      };
+      function ok(){if(done)return;done=true;clearTimeout(guard);resolve(api)}
+      function bad(e){if(done){failAll();return}done=true;clearTimeout(guard);try{peer&&peer.destroy()}catch(x){}reject(e||new Error('peer'))}
+      function startClient(){
+        isHub=false;
+        peer=new window.Peer();
+        peer.on('error',function(e){bad(e)});
+        peer.on('open',function(id){
+          me=id;
+          var c=peer.connect(hubId,{reliable:true});hubConn=c;
+          c.on('open',function(){try{c.send({t:'p',p:mine})}catch(e){}ok()});
+          c.on('data',function(d){if(d&&d.t==='s'&&d.p&&typeof d.p==='object'){peersMap=d.p;notify()}});
+          c.on('close',function(){if(!done)bad(new Error('close'));else failAll()});
+          c.on('error',function(){if(!done)bad(new Error('conn'));else failAll()});
+        });
+      }
+      function startHub(){
+        peer=new window.Peer(hubId);
+        peer.on('error',function(e){
+          if(e&&e.type==='unavailable-id'&&!isHub&&!me){try{peer.destroy()}catch(x){}startClient();return}
+          bad(e);
+        });
+        peer.on('open',function(id){
+          me=id;isHub=true;peersMap[me]=mine;
+          peer.on('connection',function(c){
+            c.on('open',function(){conns[c.peer]=c});
+            c.on('data',function(d){if(d&&d.t==='p'&&d.p&&typeof d.p==='object'){peersMap[c.peer]=d.p;broadcast()}});
+            var gone=function(){if(conns[c.peer]===c||peersMap[c.peer]){delete conns[c.peer];delete peersMap[c.peer];broadcast()}};
+            c.on('close',gone);c.on('error',gone);
+          });
+          ok();
+        });
+      }
+      guard=setTimeout(function(){bad(new Error('timeout'))},10000);
+      startHub();
+    })});
+  }};
+}
+
+function renderTogether(){
+  var el=$('#together');if(!el)return;
+  var h='<h2>Main bersama</h2>';
+  if(!ROOMREADY){el.innerHTML=h+'<p style="color:var(--muted)">Memeriksa koneksi room...</p>';return}
+  if(!ROOMCAP){el.innerHTML=h+'<p style="color:var(--muted)">Room belum bisa dipakai di tampilan ini. Buka game lewat tautan dari akun yang sudah diberi akses ke halaman ini, dan masuk ke akunmu di claude.ai.</p>';return}
+  h+='<div class="field"><label for="nick">Namamu di room</label><input class="inp" id="nick" maxlength="12" autocomplete="off" placeholder="Pemain" value="'+esc(S.nick||'')+'"></div>';
+  h+='<button class="btn primary block" id="roomCreate">Buat room baru</button>';
+  h+='<div class="field"><label for="roomIn">Atau masukkan kode dari temanmu</label><div class="joinrow"><input class="inp codein" id="roomIn" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="KODE" value="'+esc(ROOM_IN)+'"><button class="btn" id="roomJoin">Masuk</button></div></div>';
+  h+='<p class="msg" aria-live="polite">'+esc(ROOM_MSG)+'</p>';
+  h+='<p class="note">Satu room maksimal 4 pemain. Semua pemain mendapat rintangan yang sama. Tuan rumah memilih lama lomba: bebas, 5, 7, 10, atau 15 menit. Di akhir ada podium. Semua pemain harus online. Tuan rumah (pembuat room) jangan menutup halaman sampai lomba selesai.</p>';
+  el.innerHTML=h;
+}
+function roomPlayers(R){
+  var arr=[];
+  if(!R||!R.nr)return arr;
+  R.nr.peers().forEach(function(p){
+    if(p.kind!=='viewer'||!p.presence||!(+p.presence.ja))return;
+    arr.push(p);
+  });
+  arr.sort(function(a,b){return (num(a.presence.ja)-num(b.presence.ja))||(a.peer<b.peer?-1:1)});
+  return arr;
+}
+function enterRoom(code,create){
+  if(ROOM)return;
+  if(!ROOMCAP){ROOM_MSG='Room belum bisa dipakai di tampilan ini.';renderTogether();return}
+  code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length!==5){ROOM_MSG='Kode room terdiri dari 5 huruf atau angka.';renderTogether();return}
+  var R={code:code,nr:null,unsubs:[],state:'wait',create:!!create,joinedAt:Date.now(),settled:false,retried:false,lastGo:0,endAt:0,sent:'',final:0,timeUp:false,resShown:false};
+  ROOM=R;ROOM_MSG='Menghubungkan ke room '+code+'...';renderTogether();
+  ROOMCAP.join('lb-'+code.toLowerCase()).then(function(nr){
+    if(ROOM!==R){try{nr.leave().catch(function(){})}catch(e){}return}
+    R.nr=nr;
+    nr.presence({nm:nickName(),sk:S.skin,ja:R.joinedAt,du:300,ph:'lobi',go:0,sc:0,lv:0,d:0,sp:0,ln:1,ov:0}).catch(function(){});
+    R.unsubs.push(nr.onPeers(function(){onRoomPeers(R)},function(){if(ROOM===R)leaveRoom('Koneksi room terputus. Coba masuk lagi.')}));
+    setTimeout(function(){settleRoom(R)},2500);
+  },function(){
+    if(ROOM===R){ROOM=null;ROOM_MSG='Belum bisa masuk room. Coba lagi sebentar lagi.';renderTogether()}
+  });
+}
+function settleRoom(R){
+  if(ROOM!==R||!R.nr||R.settled)return;
+  var pl=roomPlayers(R),idx=-1;
+  pl.forEach(function(p,i){if(p.sameTab)idx=i});
+  if(idx<0&&!R.retried){R.retried=true;setTimeout(function(){settleRoom(R)},900);return}
+  if(idx<0||idx>=4){leaveRoom('Room '+R.code+' sudah penuh. Satu room maksimal 4 pemain.');return}
+  if(!R.create&&pl.length<2){leaveRoom('Room '+R.code+' tidak ditemukan. Cek kodenya, atau minta temanmu membuat room dulu.');return}
+  var h=pl[0];R.lastGo=(h&&!h.sameTab)?num(h.presence.go):0;
+  R.settled=true;R.state='lobi';ROOM_MSG='';
+  $('#home').hidden=true;$('#play').hidden=true;$('#room').hidden=false;
+  window.scrollTo(0,0);
+  renderLobby(R);
+}
+function leaveRoom(msg){
+  var R=ROOM;ROOM=null;
+  if(R){
+    R.unsubs.forEach(function(u){try{u()}catch(e){}});
+    if(R.nr){try{R.nr.presence({ph:'keluar'}).catch(function(){})}catch(e){}try{R.nr.leave().catch(function(){})}catch(e){}}
+  }
+  ROOM_MSG=msg||'';
+  clearTimeout(qTimer);cancelAnimationFrame(raf);G=null;closeSheet();
+  $('#room').hidden=true;$('#play').hidden=true;$('#home').hidden=false;
+  renderHome();window.scrollTo(0,0);
+}
+function onRoomPeers(R){
+  if(ROOM!==R||!R.settled)return;
+  if(R.state==='lobi'){roomCheckStart(R);if(ROOM===R&&R.state==='lobi')renderLobby(R)}
+  else if(R.state==='hasil')renderResults(R);
+}
+var DURS=[[0,'Bebas'],[300,'5 menit'],[420,'7 menit'],[600,'10 menit'],[900,'15 menit']];
+function durOf(p){return p.presence.du==null?300:num(p.presence.du)}
+function durLabel(d){for(var i=0;i<DURS.length;i++)if(DURS[i][0]===d)return DURS[i][1];return Math.round(d/60)+' menit'}
+function hostSetDur(v){
+  var R=ROOM;
+  if(!R||R.state!=='lobi'||!R.nr)return;
+  var pl=roomPlayers(R);
+  if(!pl.length||!pl[0].sameTab)return;
+  R.nr.presence({du:v}).catch(function(){});
+  renderLobby(R);
+}
+function renderLobby(R){
+  if(ROOM!==R||!R.settled||R.state!=='lobi')return;
+  var pl=roomPlayers(R),host=!!(pl[0]&&pl[0].sameTab);
+  $('#roomCode').textContent=R.code;
+  $('#roomCount').textContent=pl.length+'/4 pemain';
+  var h='<h2>Pemain</h2><div class="slots4">';
+  for(var i=0;i<4;i++){
+    var p=pl[i];
+    if(p){
+      var q=p.presence;
+      h+='<div class="slotp'+(p.sameTab?' me':'')+'"><canvas width="96" height="120" data-sk="'+skinOf(q.sk).id+'"></canvas><div><b>'+esc(cleanName(q.nm))+'</b><span>'+(i===0?'Tuan rumah':'Siap')+(p.sameTab?' · kamu':'')+'</span></div></div>';
+    }else h+='<div class="slotp empty"><div><b>Kosong</b><span>Menunggu teman</span></div></div>';
+  }
+  $('#roomPlayers').innerHTML=h+'</div>';
+  var cs=$('#roomPlayers').querySelectorAll('canvas[data-sk]');
+  for(var j=0;j<cs.length;j++){var c=cs[j].getContext('2d');c.scale(2,2);drawChar(c,24,56,0.4,cs[j].getAttribute('data-sk'),0.9)}
+  var allLobi=pl.every(function(p){return p.presence.ph==='lobi'});
+  var hostPh=pl[0]?pl[0].presence.ph:'';
+  var du=pl[0]?durOf(pl[0]):300;
+  var a='<div class="card"><h3>Lama lomba</h3><div class="durs">';
+  DURS.forEach(function(o){a+='<button class="segb dur'+(o[0]===du?' on':'')+'" data-dur="'+o[0]+'"'+(host?'':' disabled')+'>'+o[1]+'</button>'});
+  a+='</div><p class="hintw">'+(host?'Kamu tuan rumah, jadi kamu yang memilih lama lomba.':'Lama lomba dipilih oleh tuan rumah.')+'</p></div>';
+  if(host){
+    a+='<button class="btn primary block" id="roomStart" style="min-height:58px;font-size:19px"'+(allLobi?'':' disabled')+'>Mulai lomba</button><p class="hintw">'+
+      (allLobi?(pl.length<2?'Kamu sendirian di room. Tunggu teman masuk, atau mulai sekarang untuk mencoba. ':'')+(du?'Lomba berlangsung '+durLabel(du)+'.':'Tanpa batas waktu. Tiap pemain mengakhiri larinya dengan tombol Selesai, lalu podium muncul setelah semua selesai.'):'Menunggu pemain lain selesai lomba sebelumnya.')+'</p>';
+  }else{
+    a+='<div class="card"><b>Menunggu tuan rumah memulai lomba...</b></div>'+(hostPh==='main'?'<p class="hintw">Lomba sedang berlangsung. Kamu ikut di lomba berikutnya.</p>':'');
+  }
+  $('#roomAction').innerHTML=a;
+}
+function hostStart(R){
+  if(!R||ROOM!==R||R.state!=='lobi')return;
+  var pl=roomPlayers(R);
+  if(!pl.length||!pl[0].sameTab)return;
+  if(!pl.every(function(p){return p.presence.ph==='lobi'}))return;
+  var go=1+Math.floor(Math.random()*2147483000);
+  R.lastGo=go;
+  R.nr.presence({go:go}).catch(function(){});
+  beginRoomRace(R,go);
+}
+function roomCheckStart(R){
+  if(R.state!=='lobi')return;
+  var pl=roomPlayers(R),h=pl[0];
+  if(!h||h.sameTab)return;
+  var go=num(h.presence.go);
+  if(go&&go!==R.lastGo){R.lastGo=go;beginRoomRace(R,go)}
+}
+function beginRoomRace(R,go){
+  closeSheet();
+  var pl=roomPlayers(R),du=pl[0]?durOf(pl[0]):300;
+  R.state='main';R.dur=du;R.endAt=du?Date.now()+du*1000:0;R.sent='';R.resShown=false;R.resSig='';R.snap=null;
+  $('#room').hidden=true;
+  startRun(go);
+  R.nr.presence({ph:'main',sc:0,lv:0,d:0,sp:0,ln:1,ov:0}).catch(function(){});
+}
+function roomSync(){
+  var R=ROOM;
+  if(!R||!R.nr||R.state!=='main'||!G)return;
+  var p={sc:score(),lv:G.level,d:Math.round(G.dist*10)/10,sp:(G.paused||G.over)?0:Math.round(G.speed*10)/10,ln:Math.round(G.laneX*100)/100,ov:G.over?1:0};
+  var key=p.sc+'|'+p.lv+'|'+p.d+'|'+p.sp+'|'+p.ln+'|'+p.ov;
+  if(key===R.sent)return;
+  R.sent=key;R.nr.presence(p).catch(function(){});
+}
+function roomFinish(timeUp){
+  var R=ROOM;
+  if(!R||R.state!=='main'||!G)return;
+  R.state='hasil';G.finishing=true;G.paused=true;clearTimeout(qTimer);
+  var sc=score();if(sc>S.best)S.best=sc;save();
+  R.final=sc;R.timeUp=!!timeUp;R.resShown=false;R.resSig='';R.snap=null;
+  R.nr.presence({ph:'hasil',sc:sc,lv:G.level,sp:0,ov:0}).catch(function(){});
+  renderResults(R);
+}
+function podiumHtml(rk){
+  var order=[1,0,2],h='<div class="podium">';
+  order.forEach(function(i){
+    var r=rk[i];
+    if(!r){h+='<div class="pcol"></div>';return}
+    h+='<div class="pcol p'+(i+1)+'"><canvas width="128" height="160" data-sk="'+skinOf(r.skin).id+'"></canvas><b>'+esc(r.n)+(r.me?' (kamu)':'')+'</b><span>'+r.score+'</span><div class="pblock"><i>'+(i+1)+'</i></div></div>';
+  });
+  h+='</div>';
+  if(rk.length>3){
+    h+='<div class="ranklist">';
+    rk.slice(3).forEach(function(r,j){h+='<div class="r'+(r.me?' me':'')+'"><b>'+(j+4)+'</b><b>'+esc(r.n)+'</b><span>'+r.score+'</span></div>'});
+    h+='</div>';
+  }
+  return h;
+}
+function paintPodium(){
+  var cs=sheet.querySelectorAll('canvas[data-sk]');
+  for(var i=0;i<cs.length;i++){var c=cs[i].getContext('2d');c.scale(2,2);drawChar(c,32,78,0.55,cs[i].getAttribute('data-sk'),0.9)}
+}
+function renderResults(R){
+  if(ROOM!==R||R.state!=='hasil'||!G)return;
+  var rk=ranking(),live=rk.some(function(r){return r.live});
+  if(!live){if(!R.snap)R.snap=rk;rk=R.snap}
+  var sig=(live?'1':'0')+'|'+rk.map(function(r){return r.id+':'+r.score+':'+(r.live?1:0)}).join(',');
+  if(R.resShown&&R.resSig===sig)return;
+  R.resSig=sig;R.resShown=true;
+  var h='<span class="eyebrow">'+(live?'Menunggu pemain lain':(R.timeUp?'Waktu habis':'Lomba selesai'))+'</span><h2>'+(live?'Skormu '+R.final:'Podium')+'</h2>';
+  if(live){
+    h+='<div class="ranklist">';
+    rk.forEach(function(r,i){h+='<div class="r'+(r.me?' me':'')+'"><b>'+(i+1)+'</b><b>'+esc(r.n)+'</b><span>'+r.score+(r.live?' · masih lari':'')+'</span></div>'});
+    h+='</div>';
+  }else h+=podiumHtml(rk);
+  h+='<p style="color:var(--muted)">Koin dari lari ini: '+G.coins+'. Total koin kamu: '+S.coins+'.</p>';
+  if(!live)h+='<button class="btn primary block" id="bBack">Kembali ke room</button>';
+  h+='<button class="btn block ghost" id="bQuit">Keluar room</button>';
+  openSheet(h);paintPodium();
+  if(!live)$('#bBack').onclick=function(){backToLobby(R)};
+  $('#bQuit').onclick=function(){leaveRoom('')};
+}
+function backToLobby(R){
+  if(ROOM!==R)return;
+  closeSheet();cancelAnimationFrame(raf);G=null;
+  R.state='lobi';R.resShown=false;R.sent='';
+  R.nr.presence({ph:'lobi',go:0,sc:0,lv:0,d:0,sp:0,ov:0}).catch(function(){});
+  $('#play').hidden=true;$('#room').hidden=false;window.scrollTo(0,0);
+  renderLobby(R);
+}
+function copyCode(btn){
+  var code=ROOM?ROOM.code:'';
+  function done(ok){btn.textContent=ok?'Tersalin':'Salin dari layar';setTimeout(function(){btn.textContent='Salin kode'},1800)}
+  try{navigator.clipboard.writeText(code).then(function(){done(true)},function(){done(false)})}catch(e){done(false)}
+}
+function rivals(){
+  var R=ROOM,out=[];
+  if(!R||!R.nr)return out;
+  roomPlayers(R).forEach(function(p,i){
+    if(p.sameTab)return;
+    var q=p.presence;
+    if(q.ph!=='main'&&q.ph!=='hasil')return;
+    out.push({id:'p'+p.peer,idx:i,n:cleanName(q.nm),skin:skinOf(q.sk).id,score:Math.floor(num(q.sc)),d:num(q.d),sp:clamp(num(q.sp),0,60),ln:clamp(q.ln==null?1:num(q.ln),0,2),ov:q.ov?1:0,live:q.ph==='main',t:p.updatedAt});
+  });
+  return out;
+}
+function drawRivals(){
+  if(!ROOM||ROOM.state!=='main'||!G)return;
+  var now=Date.now(),list=rivals();
+  list.forEach(function(r){r.dd=r.d+r.sp*Math.min(0.4,(now-r.t)/1000)-G.dist});
+  list.sort(function(a,b){return b.dd-a.dd});
+  list.forEach(function(r){
+    if(r.ov||!r.live||r.dd<-1.2||r.dd>60)return;
+    var p=P(r.dd),x=CX+(r.ln-1)*LW*p.s;
+    ctx.globalAlpha=0.92;
+    drawChar(ctx,x,p.y,p.s,r.skin,now/1000*(4.5+0.28*r.sp)+r.idx*1.7);
+    ctx.globalAlpha=1;
+    var fs=Math.max(9,13*p.s);
+    ctx.font='800 '+fs+'px "Nunito Sans",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.lineWidth=3;ctx.strokeStyle='rgba(20,16,50,.85)';ctx.strokeText(r.n,x,p.y-118*p.s);
+    ctx.fillStyle='#ffffff';ctx.fillText(r.n,x,p.y-118*p.s);
+  });
+  ctx.globalAlpha=1;
+}
+
+/* ---------- HUD & papan peringkat ---------- */
+var raceSig='',raceEls={};
+function buildRace(){raceSig='';raceEls={};$('#race').innerHTML=''}
+function paintRace(rk){
+  var sig=rk.map(function(r){return r.id+':'+r.skin+':'+r.n}).sort().join('|');
+  if(sig!==raceSig){
+    raceSig=sig;raceEls={};
+    var box=$('#race');box.innerHTML='';
+    rk.forEach(function(r){
+      var el=document.createElement('div');el.className='runner'+(r.me?' me':'');
+      el.innerHTML='<span class="rk">1</span><canvas width="52" height="64"></canvas><span class="nm"></span><span class="sc">0</span>';
+      el.querySelector('.nm').textContent=r.n;
+      box.appendChild(el);
+      var c=el.querySelector('canvas').getContext('2d');c.scale(2,2);drawChar(c,13,31,0.23,r.skin,0.9);
+      raceEls[r.id]={el:el,rk:el.querySelector('.rk'),sc:el.querySelector('.sc')};
+    });
+  }
+  rk.forEach(function(r,i){var re=raceEls[r.id];if(re){re.el.style.order=i;re.rk.textContent=i+1;re.sc.textContent=r.score}});
+}
+function hud(force){
+  var rk=ranking();
+  $('#hScore').textContent=score()+' skor';
+  $('#hLevel').textContent='Lv '+(G.level+1)+' · '+theme().name+(G.chase?' · dikejar polisi':'');
+  $('#hTempo').textContent='Tempo x'+(G.speed/13).toFixed(1);
+  $('#hCoins').innerHTML=COIN+G.coins;
+  $('#hKeys').innerHTML=KEY+S.keys;
+  var pips=$('#pips').children;for(var i=0;i<3;i++)pips[i].className=i<G.strikes?'on':'';
+  var pos=1;
+  rk.forEach(function(r,i){if(r.me)pos=i+1});
+  var chip=rk.length>1?'Peringkat '+pos+'/'+rk.length:'Main solo';
+  if(ROOM&&ROOM.state==='main'){if(ROOM.endAt){var rem=Math.max(0,Math.ceil((ROOM.endAt-Date.now())/1000));chip+=' · '+Math.floor(rem/60)+':'+pad2(rem%60)}else chip+=' · tanpa batas'}
+  $('#rankChip').textContent=chip;
+  paintRace(rk);
+}
+function updateBoostBtn(){var b=$('#padB');b.textContent='Boost 2x ('+S.boosts+')';b.disabled=S.boosts<=0}
+
+/* ---------- kontrol & alur ---------- */
+function move(dir){if(!G||G.paused||G.over)return;G.lane=clamp(G.lane+dir,0,2)}
+function useBoost(){if(!G||G.paused||G.over||S.boosts<=0||G.boostT>0)return;S.boosts--;G.boostT=10;save();updateBoostBtn();toast('Boost 2x aktif, 10 detik','good')}
+$('#padL').onclick=function(){move(-1)};
+$('#padR').onclick=function(){move(1)};
+$('#padB').onclick=useBoost;
+document.addEventListener('keydown',function(e){
+  if(!G)return;
+  if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){move(-1);e.preventDefault()}
+  else if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){move(1);e.preventDefault()}
+  else if(e.key==='b'||e.key==='B')useBoost();
+});
+var sx=null,sy=null;
+cv.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY});
+cv.addEventListener('pointerup',function(e){
+  if(sx===null)return;
+  var dx=e.clientX-sx,dy=e.clientY-sy;sx=null;
+  if(Math.abs(dx)>28&&Math.abs(dx)>Math.abs(dy))move(dx>0?1:-1);
+  else if(Math.abs(dx)<10&&Math.abs(dy)<10){var r=cv.getBoundingClientRect();move(e.clientX<r.left+r.width/2?-1:1)}
+});
+function loop(ts){
+  raf=requestAnimationFrame(loop);
+  var dt=Math.min(0.05,(ts-lastTs)/1000||0);lastTs=ts;
+  if(!G)return;
+  update(dt);draw();
+  hudAcc+=dt;if(hudAcc>0.2){hudAcc=0;hud()}
+  if(ROOM&&ROOM.state==='main'){
+    syncAcc+=dt;if(syncAcc>0.12){syncAcc=0;roomSync()}
+    if(ROOM.endAt&&Date.now()>=ROOM.endAt)roomFinish(true);
+  }
+}
+function startRun(seed){
+  $('#room').hidden=true;$('#home').hidden=true;$('#play').hidden=false;
+  $('#btnEnd').hidden=!(ROOM&&ROOM.state==='main');$('#btnEnd').textContent='Selesai';endArm=0;
+  newRun(seed);cancelAnimationFrame(raf);lastTs=performance.now();raf=requestAnimationFrame(loop);
+  window.scrollTo(0,0);
+}
+function goHome(){
+  cancelAnimationFrame(raf);G=null;
+  $('#play').hidden=true;$('#home').hidden=false;renderHome();window.scrollTo(0,0);
+}
+$('#btnPlay').onclick=function(){startRun()};
+$('#btnEnd').onclick=function(){
+  var b=$('#btnEnd');
+  if(!endArm){endArm=1;b.textContent='Yakin selesai?';setTimeout(function(){endArm=0;b.textContent='Selesai'},3000);return}
+  endArm=0;b.textContent='Selesai';roomFinish(false);
+};
+$('#btnMenu').onclick=function(){clearTimeout(qTimer);closeSheet();if(ROOM)leaveRoom('');else goHome()};
+try{
+  if(window.claude&&window.claude.use){
+    window.claude.use('room').then(function(r){ROOMCAP=r||makePeerRoomCap();ROOMREADY=true;renderTogether()},function(){ROOMCAP=makePeerRoomCap();ROOMREADY=true;renderTogether()});
+  }else{ROOMCAP=makePeerRoomCap();ROOMREADY=true}
+}catch(e){ROOMCAP=makePeerRoomCap();ROOMREADY=true}
+renderHome();
+})();
+</script>
